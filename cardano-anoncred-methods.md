@@ -20,10 +20,11 @@ Schema
 - Cheqd example: `did:cheqd:mainnet:<issuerDid>/resources/<revRegDefResourceId>` i.e. `did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J/resources/af20b1f0-5c4d-4037-9669-eaedddb9c2df`
 
 ### REV_REG_ENTRY
+- Indy Example: `<objectType><RevocRegDefId>` i.e. `5:zF7rhDBfUt9d1gJPjx7s1J:4:zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree:CL_ACCUM:degreeCredRevRegDef`
 
 ## DID enforcement
 (TBD)
-- use of DID keys (issuer, revocation)
+- use of DID keys to sign (issuer, revocation)
 - add signature in metadata
 
 
