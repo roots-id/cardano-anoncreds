@@ -15,7 +15,7 @@ The Ledger Agnostic [AnonCred Specification](https://hyperledger.github.io/anonc
 - [AnonCreds Rust Open Source Code](https://github.com/hyperledger/anoncreds-rs)
 - [cheqd AnonCreds Object Method](https://docs.cheqd.io/identity/guides/resources/using-on-ledger-resources-to-support-anoncreds)
 - [Cardano AnonCred SSI WG meetings notes](meeting-notes.md)
-- [INDY Tails Server(https://github.com/bcgov/indy-tails-server)
+- [INDY Tails Server](https://github.com/bcgov/indy-tails-server)
 - [Tutorial on how revocation works in AnonCreds](https://github.com/hyperledger/indy-hipe/tree/main/text/0011-cred-revocation)
 
 ## High-level overview of AnonCreds Objects
