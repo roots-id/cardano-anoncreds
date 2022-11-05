@@ -24,13 +24,13 @@ Schema
 ## DID enforcement
 (TBD)
 - use of DID keys (issuer, revocation)
-- add signature en metadata
+- add signature in metadata
 
 
 ## AnonCred Objects
 (TBD)
 Objects consist of Object `data` and Object `metadata`
-Cheqd metadata example (it's use for queries):
+Cheqd metadata example (it's used in queries):
 ```
 "AnonCredsObjectMetadata" {  
   "objectFamily": "anoncreds",
@@ -145,7 +145,7 @@ Options: CBOR, Protobuf
 
 ## Retrieve AnonCred objects
 (TBD)
-If transaction hash is used in the ID, they can retrieved with a simplier query, expept for accumulators
+If transaction hash is used in the ID, they can be retrieved with a simplier query, except for accumulators
 
 ## Generate and store `TAIL_FILE`
 (TBD)
