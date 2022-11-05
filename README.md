@@ -18,7 +18,7 @@ The ledger-agnostic [AnonCred Specification](https://hyperledger.github.io/anonc
 - [INDY Tails Server](https://github.com/bcgov/indy-tails-server)
 - [Tutorial on how revocation works in AnonCreds](https://github.com/hyperledger/indy-hipe/tree/main/text/0011-cred-revocation)
 
-## High-level overview of AnonCreds Objects
+## High-level overview of AnonCred Objects
 ![AnonCred Objects](https://raw.githubusercontent.com/hyperledger/anoncreds-spec/main/spec/diagrams/anoncreds-visual-data-model-overview-simple-trust-triangle.png)
 
 ## AnonCred Object
