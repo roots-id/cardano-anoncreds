@@ -4,7 +4,7 @@ This repository hosts information regarding the implementation of AnonCreds Meth
 The AnonCreds (Anonymous Credentials) specification is based on the open-source verifiable credential implementation of AnonCreds that has been in use since 2017, initially as part of the Hyperledger Indy open-source project and now in the [Hyperledger AnonCreds](https://wiki.hyperledger.org/display/ANONCREDS/Hyperledger+AnonCreds) project. The extensive use of AnonCreds around the world has made it a de facto standard for ZKP-based verifiable credentials.
 
 The goal of this Cardano initiative is to define and provide a reference implementation of the AnonCreds Methods that publish Anoncred Objects in a VDR (Verifiable Data Registry), which in our case is the Cardano Blockchain. The defined AnonCred Methods will be published to the [AnonCreds Methods Registry](https://hyperledger.github.io/anoncreds-methods-registry/) that currently host methods for Hyperledger Indy Legacy AnonCreds, did:indy
-AnonCreds, HTTP AnonCreds, and cheqd AnonCreds.
+AnonCreds, HTTP AnonCreds, and cheqd AnonCreds. The working document can be found [here](cardano-anoncred-methods.md)
 
 The ledger-agnostic [AnonCred Specification](https://hyperledger.github.io/anoncreds-spec) is a work-in-progress project from the AnonCreds Specification Working Group at [Linux Hyperledger Foundation](https://www.hyperledger.org). All interested are welcome to participate and collaborate also into the Hyperledger AnonCred WG. 
 
