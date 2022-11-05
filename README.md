@@ -40,7 +40,7 @@ The objects that need to be stored on Cardano are:
 - Where to store `TAIL_FILES`
 
 ## Other Goals
-- Propose a CIP
+- CIP Proposal
 
 ## Copyright Notice
 AnonCred specification is subject to the Community Specification License 1.0 available at https://github.com/CommunitySpecification/1.0.
