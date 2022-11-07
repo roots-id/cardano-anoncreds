@@ -6,12 +6,13 @@
 ## November 11, 2022 Working Group Meeting  <--- NEXT MEETING
 Participants:
 
-* AnonCreds spec
-** Work being done on the revocation model list
-* AnonCreds rust impl
-** Replace Indy-vc implementation with AnonCreds-rx
-** Move indy-wql to Aries Askar
-* Cardano AnonCreds method thoughts?
+### AnonCreds spec
+* Work being done on the revocation model list
+### AnonCreds rust impl
+* Replace indy-credx implementation with AnonCreds-rx
+* Move indy-wql to Aries Askar
+* Wrappers for each language
+### Cardano AnonCreds method thoughts?
 
 ## October 28, 2022 Working Group Meeting
 Participants:
