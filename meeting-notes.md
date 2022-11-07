@@ -13,6 +13,7 @@ Participants:
 * Move indy-wql to Aries Askar
 * Wrappers for each language
 ### Cardano AnonCreds method thoughts?
+* [AnonCreds methods registry](https://hyperledger.github.io/anoncreds-methods-registry/)
 
 ## October 28, 2022 Working Group Meeting
 Participants:
