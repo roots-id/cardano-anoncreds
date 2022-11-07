@@ -1,10 +1,17 @@
 # Cardano AnonCred Working Group Agenda
-- Date: Wednesday at 2PM EST
+- Date: Wednesday at 1PM EST (that's newish, because USA changed time for winter)
 - Calendar invite: (TBD)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
 ## November 11, 2022 Working Group Meeting  <--- NEXT MEETING
+Participants:
 
+* AnonCreds spec
+** Work being done on the revocation model list
+* AnonCreds rust impl
+** Replace Indy-vc implementation with AnonCreds-rx
+** Move indy-wql to Aries Askar
+* Cardano AnonCreds method thoughts?
 
 ## October 28, 2022 Working Group Meeting
 Participants:
