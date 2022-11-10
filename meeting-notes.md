@@ -1,5 +1,5 @@
 # Cardano AnonCred Working Group Agenda
-- Date: Wednesday at 1PM EST (that's newish, because USA changed time for winter)
+- Date: Wednesday at 1PM EST (UTC-5)
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
