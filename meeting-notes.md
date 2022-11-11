@@ -7,7 +7,10 @@
 Participants:
 
 ## November 11, 2022 Working Group Meeting
-Participants:
+### Recording
+https://otter.ai/u/US-GT_QGrHO0edIVeo4Oq71qeAM?tab=summary&utm_campaign=meeting_summary_outline_only&utm_is_new_user=true&utm_source=meeting_summary_outline_only
+
+## Participants:
 * Lance Byrd
 * Rodolfo Miranda
 * Alex Andre
