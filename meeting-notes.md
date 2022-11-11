@@ -3,8 +3,15 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## November 11, 2022 Working Group Meeting  <--- NEXT MEETING
+## November 25, 2022 Working Group Meeting  <--- NEXT MEETING
 Participants:
+
+## November 11, 2022 Working Group Meeting
+Participants:
+* Lance Byrd
+* Rodolfo Miranda
+* Alex Andre
+* Several Snapbrillia devs (Feel free to add yourself)
 
 ### AnonCreds spec
 * Work being done on the revocation model list
@@ -14,6 +21,14 @@ Participants:
 * Wrappers for each language
 ### Cardano AnonCreds method thoughts?
 * [AnonCreds methods registry](https://hyperledger.github.io/anoncreds-methods-registry/)
+
+### Discussion
+* Revocation accumulator
+* Ids on chain (resources), including the hash of the transaction
+* Combine Spec models with Cardano specific fields
+* @Rodo will help define how we store this
+* All of the objects need an id, but then we can't use the hash from the transaction... instead right after publishing (accepted) with trx id.
+* Tails service
 
 ## October 28, 2022 Working Group Meeting
 Participants:
