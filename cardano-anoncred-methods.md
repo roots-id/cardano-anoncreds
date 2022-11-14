@@ -1,47 +1,33 @@
-## Identifiers
-(TBD)
-It should include at least publisher DID and transaction hash (TBD for REV_REG_ENTRY)
+## Identifiers and Anoncreds Objects
+`{publisherDID}/resources/{transactionHash}`
 
-### SCHEMA
-(TBD)
-- Indy example: `<publisherDid>:<objectType>:<name>:<version>` i.e. `7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7`
-- Cheqd example: `did:cheqd:mainnet:<SchemaProposerId>/resources/<SchemaResourceId>` i.e. `did:cheqd:mainnet:7BPMqYgYLQni258J8JPS8K/resources/6259d357-eeb1-4b98-8bee-12a8390d3497`
-
-Schema 
-
-### CRED_DEF 
-(TBD)
-- Indy example: `<issuerDid>:<objectType>:<signatureType>:<schemaId>:<tag>` i.e. `zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree`
-- Cheqd example: `did:cheqd:mainnet:<IssuerDid>/resources/<CredDefResourceId> i.e.`did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J/resources/77465164-5646-42d9-9a0a-f7b2dcb855c0`
-
-### REV_REG
-(TBD)
-- Indy Example: `<publisherDid>:<objectType>:<credDefId>:<revRegType>:<tag>` i.e. `zF7rhDBfUt9d1gJPjx7s1J:4:zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree:CL_ACCUM:degreeCredRevRegDef`
-- Cheqd example: `did:cheqd:mainnet:<issuerDid>/resources/<revRegDefResourceId>` i.e. `did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J/resources/af20b1f0-5c4d-4037-9669-eaedddb9c2df`
-
-### REV_REG_ENTRY
-- Indy Example: `<objectType><RevocRegDefId>` i.e. `5:zF7rhDBfUt9d1gJPjx7s1J:4:zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree:CL_ACCUM:degreeCredRevRegDef`
-
-## DID enforcement
-(TBD)
-- use of DID keys to sign (issuer, revocation)
-- add signature in metadata
-
-
-## AnonCred Objects
-(TBD)
-Objects consist of Object `data` and Object `metadata`
-Cheqd metadata example (it's used in queries):
 ```
-"AnonCredsObjectMetadata" {  
-  "objectFamily": "anoncreds",
-  "objectFamilyVersion": "v1",
-  "objectType": "4",  
-  "typeName": "REVOC_REG_DEF"
-  "publisherId": "did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J",      
-  "objectUri": "did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J/resources/af20b1f0-5c4d-4037-9669-eaedddb9c2df"
+{
+"AnonCredsObject": {
+     ...
+  },
+"AnonCredsObjectMetadata": {
+    "family": "anoncreds",
+    "version": "v1",
+    "type": "SCHEMA",
+    "publisherDID": "did:cheqd:mainnet:7BPMqYgYLQni258J8JPS8K",
+    "publisherSignature: "XXXXXXXXX"
+    }
+  }
 }
 ```
+Types:
+- SCHEMA
+- CRED_DEF
+- REV_REG
+- REV_REG_ENTRY
+
+
+## DID enforcement
+The signature provided on AnonCredsObjectMetadata will prove that the publisherDID is the correct publicher of the AnonCreds object.
+
+## AnonCred Objects
+The object `id` won't be stored in the transaction metadata and should be contructed after publishing or retrieval since it depends on the transaction hash.
 
 
 ### Schema `SCHEMA`
