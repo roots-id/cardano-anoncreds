@@ -13,6 +13,7 @@ The ledger-agnostic [AnonCred Specification](https://hyperledger.github.io/anonc
 - [AnonCreds Methods Registry](https://hyperledger.github.io/anoncreds-methods-registry/)
 - [Cardano SSI Alliance](https://cssiaworkspace.slack.com/archives/C047EH5FJK0) Slack channel
 - [AnonCreds Rust Open Source Code](https://github.com/hyperledger/anoncreds-rs)
+- [ToIP DID-Linked Resources Specification](https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification)
 - [cheqd AnonCreds Object Method](https://docs.cheqd.io/identity/guides/resources/using-on-ledger-resources-to-support-anoncreds)
 - [Cardano AnonCred SSI WG meetings notes](meeting-notes.md)
 - [INDY Tails Server](https://github.com/bcgov/indy-tails-server)
