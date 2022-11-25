@@ -5,6 +5,25 @@
 
 ## November 25, 2022 Working Group Meeting  <--- NEXT MEETING
 Participants:
+* Lance Byrd
+* Rodolfo Miranda
+* Alex Andrei
+
+## Utility Foundry of Trust Over IP
+* Use DIDs as references to other resources: Cheqd has a way to link resources to DIDs that is now part of ToIP (in Utility Foundry WG) https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification The idea is to use this specification to store the anoncreds object into Cardano TX metatada.
+** Nice way to query for all schemas from a particular DID
+![image](https://user-images.githubusercontent.com/681493/204037513-f17160ce-c7cf-43b1-af4f-0594086aa152.png)
+* More movement for AFJ towards Indy-pendence for AnonCreds https://github.com/hyperledger/aries-framework-javascript/pull/1118
+* More discussion about AnonCreds method on Cardano
+** We will discuss storing on the blockchain soon
+** We will discuss how to interface with anoncreds-rs
+* AnonCreds-spec is discussing naming conventions and expanding beyond DIDs for identifiers https://github.com/hyperledger/anoncreds-spec/issues/107
+* IIW AnonCreds presentation was excellent https://photos.app.goo.gl/TkkgQa1QrZJV7Ton7
+* Cardano announced Midnight privacy sidechain
+** https://youtu.be/z_oQAuFSh3E
+** https://youtu.be/tbtkClr3Y3I
+** https://youtu.be/7xC-mQ3wSao?t=514
+* We'll create a CIP for AnonCreds
 
 ## November 11, 2022 Working Group Meeting
 ### Recording
@@ -13,7 +32,7 @@ https://otter.ai/u/US-GT_QGrHO0edIVeo4Oq71qeAM?tab=summary&utm_campaign=meeting_
 ## Participants:
 * Lance Byrd
 * Rodolfo Miranda
-* Alex Andre
+* Alex Andrei
 * Several Snapbrillia devs (Feel free to add yourself)
 
 ### AnonCreds spec
