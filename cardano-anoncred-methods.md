@@ -1,5 +1,14 @@
-## Identifiers and Anoncreds Objects
-`{publisherDID}/resources/{transactionHash}`
+## Identifiers for Anoncreds Objects
+
+The identifiers used to identify Anoncreds Objects should follow the [DID-Linked Resources Specification](https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification) defined at the Utility Foundry Working Group at Trust Over IP ([ToIP](https://trustoverip.org)).
+The aim of that specification is to define how DID URLs can act as persistent identifiers for referencing and retrieving Resources (such as data schemas, interface definitions, governance documents, or policy definitions).
+
+Cardanon Anoncreds Objects will have the following format:
+`{publisherDID}/resources/{objectID}`
+
+
+## Cardano Anoncred Objects
+Cardano Anoncred Object are stored as transaction metadata in the Cardano blockchain and consist of a JSON object with two main parts: the AnonCredsObject  itself and the AnonCredsObjectMetadata, as in the following example:
 
 ```
 {
@@ -10,13 +19,14 @@
     "family": "anoncreds",
     "version": "v1",
     "type": "SCHEMA",
-    "publisherDID": "did:cheqd:mainnet:7BPMqYgYLQni258J8JPS8K",
-    "publisherSignature: "XXXXXXXXX"
+    "publisherDID": "did:prism:mainnet:7BPMqYgYLQni258J8JPS8K",
+    "publisherSignature: "XXXXXXXXX",
+    "checkSum": "7b2022636f6e74656e74223a202274657374206461746122207d0ae3b0c44298"
     }
   }
 }
 ```
-Types:
+Types of objects:
 - SCHEMA
 - CRED_DEF
 - REV_REG
