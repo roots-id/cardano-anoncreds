@@ -48,7 +48,7 @@ Where:
 
 
 ## AnonCred Object Types
-
+The following JSON are examples of `ResourceObject`s based on its type:
 
 ### Schema `SCHEMA`
 ```
@@ -102,7 +102,6 @@ Where:
 ```
 
 
-
 ### Revocation registry `REV_REG`
 ```
 
@@ -127,7 +126,6 @@ Where:
 }
 ```
 
-
 ### Revocation registry entries `REV_REG_ENTRY`
 ```
 {
@@ -142,17 +140,12 @@ Where:
 }
 ```
 
-## Serialization
-(TBD)
-Options: CBOR, Protobuf
 
-
-## Publish AnonCred objects in Cardano Blockchain as Transaction Metadata
+## Consideration for publishing AnonCred objects in Cardano Blockchain as Transaction Metadata
 (TBD)
 
 ## Retrieve AnonCred objects
 (TBD)
-If transaction hash is used in the ID, they can be retrieved with a simplier query, except for accumulators
 
 ## Generate and store `TAIL_FILE`
 (TBD)
