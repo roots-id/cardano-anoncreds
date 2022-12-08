@@ -1,43 +1,53 @@
+# Cardano Anoncred Method
+
 ## Identifiers for Anoncreds Objects
 
 The identifiers used to identify Anoncreds Objects should follow the [DID-Linked Resources Specification](https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification) defined at the Utility Foundry Working Group at Trust Over IP ([ToIP](https://trustoverip.org)).
 The aim of that specification is to define how DID URLs can act as persistent identifiers for referencing and retrieving Resources (such as data schemas, interface definitions, governance documents, or policy definitions).
 
 Cardanon Anoncreds Objects will have the following format:
-`{publisherDID}/resources/{objectID}`
+`{publisherDID}/resources/{objectId}`
 
+Since objects are stored in Cardano Blockcahain as transaction metadata, the objectId is defined as the transaction hash of the transaction used to publish the metadata on the blockchain. That way simplify the reference and lookup of the object/transaction in the blockchain.
 
 ## Cardano Anoncred Objects
-Cardano Anoncred Object are stored as transaction metadata in the Cardano blockchain and consist of a JSON object with two main parts: the AnonCredsObject  itself and the AnonCredsObjectMetadata, as in the following example:
+Cardano Anoncred Objects are stored as transaction metadata in the Cardano blockchain and consist of a JSON object with two main parts: the ResourceObject  itself and the ResourceObjectMetadata as in the following example:
 
 ```
 {
-"AnonCredsObject": {
+"ResourceObject": {
      ...
   },
-"AnonCredsObjectMetadata": {
-    "family": "anoncreds",
-    "version": "v1",
-    "type": "SCHEMA",
-    "publisherDID": "did:prism:mainnet:7BPMqYgYLQni258J8JPS8K",
-    "publisherSignature: "XXXXXXXXX",
+"ResourceObjectMetadata": {
+    "resourceURI": "did:prism:mainnet:db47e78dd57d2043a7a704fbd9586682110a2097ac83b35602f290/resource/1815a6d1b6ecb9c2e1de09d3d18389b641ea34700",
+    "resourceName": "degreeSchema",
+    "resourceFamily": "anoncreds"
+    "resourceType": "SCHEMA",
+    "resourceVersion": "v1",    
+    "mediaType": "application/json",
+    "created": "2020-12-20T19:17:47Z",
     "checkSum": "7b2022636f6e74656e74223a202274657374206461746122207d0ae3b0c44298"
+    "publisherId": "did:prism:mainnet:7BPMqYgYLQni258J8JPS8K",
+    "publisherSignature: "XXXXXXXXX",
     }
   }
 }
 ```
-Types of objects:
-- SCHEMA
-- CRED_DEF
-- REV_REG
-- REV_REG_ENTRY
+Where:
+
+- resourceURI: is the object identifier as defined above. It includes the publidher DID and objectId that is the transaction hash. Since the transaction hash is dependat on the content, this field must not be stored in the transaction metadata but recontrustect after being retrieved and added to the object.
+- resourceName: a string that identifies the resource
+- resourceFamily: "anoncreds". The family can be extended to future versions of Anoncreds like "anoncreds2.0"
+- resourceType: one of SCHEMA | CRED_DEF | REV_REG | REV_REG_ENTRY
+- resourceVersion: the version of the resource
+- mediaType: "application/json"
+- created: date in the format 2020-12-20T19:17:47Z
+- checksum: the MD5 chechsum of the ResourceObject
+- publisherId: the DID of the publisher
+- publisherSignature: the signature of the ResourceObject using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
 
 
-## DID enforcement
-The signature provided on AnonCredsObjectMetadata will prove that the publisherDID is the correct publicher of the AnonCreds object.
-
-## AnonCred Objects
-The object `id` won't be stored in the transaction metadata and should be contructed after publishing or retrieval since it depends on the transaction hash.
+## AnonCred Object Types
 
 
 ### Schema `SCHEMA`
