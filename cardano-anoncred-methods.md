@@ -1,17 +1,17 @@
 # Cardano Anoncred Method
 
-## Identifiers for Anoncreds Objects
+## Identifiers for Anoncred Objects
 
-The identifiers used to identify Anoncreds Objects should follow the [DID-Linked Resources Specification](https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification) defined at the Utility Foundry Working Group at Trust Over IP ([ToIP](https://trustoverip.org)).
+The identifiers used for Anoncreds Objects should follow the [DID-Linked Resources Specification](https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification) defined at the Utility Foundry Working Group at Trust Over IP ([ToIP](https://trustoverip.org)).
 The aim of that specification is to define how DID URLs can act as persistent identifiers for referencing and retrieving Resources (such as data schemas, interface definitions, governance documents, or policy definitions).
 
-Cardanon Anoncreds Objects will have the following format:
+Cardanon Anoncred Objects should have the following format:
 `{publisherDID}/resources/{objectId}`
 
-Since objects are stored in Cardano Blockcahain as transaction metadata, the objectId is defined as the transaction hash of the transaction used to publish the metadata on the blockchain. That way simplify the reference and lookup of the object/transaction in the blockchain.
+Anonced Objects must be stored in Cardano Blockcahain as transaction metadata, and to simplify reference and lookup the `objectId` is defined as the transaction hash of the transaction used to publish that metadata on the blockchain.
 
 ## Cardano Anoncred Objects
-Cardano Anoncred Objects are stored as transaction metadata in the Cardano blockchain and consist of a JSON object with two main parts: the ResourceObject  itself and the ResourceObjectMetadata as in the following example:
+The Cardano Anoncred Objects stored as transaction metadata consist of a JSON object with two parts: the `ResourceObject` itself and the `ResourceObjectMetadata` as in the following example:
 
 ```
 {
@@ -35,20 +35,20 @@ Cardano Anoncred Objects are stored as transaction metadata in the Cardano block
 ```
 Where:
 
-- resourceURI: is the object identifier as defined above. It includes the publidher DID and objectId that is the transaction hash. Since the transaction hash is dependat on the content, this field must not be stored in the transaction metadata but recontrustect after being retrieved and added to the object.
-- resourceName: a string that identifies the resource
-- resourceFamily: "anoncreds". The family can be extended to future versions of Anoncreds like "anoncreds2.0"
-- resourceType: one of SCHEMA | CRED_DEF | REV_REG | REV_REG_ENTRY
-- resourceVersion: the version of the resource
-- mediaType: "application/json"
-- created: date in the format 2020-12-20T19:17:47Z
-- checksum: the MD5 chechsum of the ResourceObject
-- publisherId: the DID of the publisher
-- publisherSignature: the signature of the ResourceObject using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
+- `resourceURI`: is the object identifier as defined above. It includes the publidher DID and objectId that is the transaction hash. Since the transaction hash is dependat on the content, this field must not be stored in the transaction metadata but recontrustect after being retrieved and added to the object.
+- `resourceName`: a string that identifies the resource
+- `resourceFamily`: "anoncreds". The family can be extended to future versions of Anoncreds like "anoncreds2.0"
+- `resourceType`: one of SCHEMA | CRED_DEF | REV_REG | REV_REG_ENTRY
+- `resourceVersion`: the version of the resource
+- `mediaType`: "application/json"
+- `created`: date in the format 2020-12-20T19:17:47Z
+- `checksum`: the MD5 chechsum of the ResourceObject
+- `publisherId`: the DID of the publisher
+- `publisherSignature`: the signature of the ResourceObject using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
 
 
-## AnonCred Object Types
-The following JSON are examples of `ResourceObject`s based on its type:
+## AnonCred Resource Object
+Resource Objects based on its type:
 
 ### Schema `SCHEMA`
 ```
@@ -145,7 +145,9 @@ The following JSON are examples of `ResourceObject`s based on its type:
 (TBD)
 
 ## Retrieve AnonCred objects
-(TBD)
+Cardano Anoncred Object can be retrieved from the blockchain by searching for a transaction by the transaction hash defined in `objectId`. It is encouraged that after retreiving a transaction, the
+
+`checkSum` and 
 
 ## Generate and store `TAIL_FILE`
 (TBD)
