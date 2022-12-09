@@ -3,13 +3,37 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## November 25, 2022 Working Group Meeting  <--- NEXT MEETING
+## January 6, 2022 Working Group Meeting <--- NEXT MEETING
+
+
+## December 9, 2022 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Rodolfo Miranda (RootsID)
+* Alex Andrei (RootsID)
+* Ed Eykholt (BlockTrust)
+* Bjorn Sandmann (BlockTrust)
+
+### CIP
+* Starting in January 2023 introduce the CIP for AnonCreds on Cardano.
+
+### Cardano AnonCreds Method
+* Reviewed https://github.com/roots-id/cardano-anoncreds/blob/main/cardano-anoncred-methods.md
+
+### AnonCreds WG meeting updates
+* Big future updates for crypto for different schemas/pairing curves/etc. Work by Mike Lodder.
+* First impl will use CL-signatures, then they will add the future improvements.
+
+### Cardano driver
+* The initial goal will be to provide a driver that will allow AnonCreds users to use Cardano as the VDR
+
+## November 25, 2022 Working Group Meeting
 Participants:
 * Lance Byrd
 * Rodolfo Miranda
 * Alex Andrei
 
-## Utility Foundry of Trust Over IP
+### Utility Foundry of Trust Over IP
 * Use DIDs as references to other resources: Cheqd has a way to link resources to DIDs that is now part of ToIP (in Utility Foundry WG) https://wiki.trustoverip.org/display/HOME/DID-Linked+Resources+Specification The idea is to use this specification to store the anoncreds object into Cardano TX metatada.
 ** Nice way to query for all schemas from a particular DID
 ![image](https://user-images.githubusercontent.com/681493/204037513-f17160ce-c7cf-43b1-af4f-0594086aa152.png)
@@ -25,8 +49,8 @@ Participants:
 ** https://youtu.be/7xC-mQ3wSao?t=514
 * We'll create a CIP for AnonCreds
 
-## November 11, 2022 Working Group Meeting
-### Recording
+### November 11, 2022 Working Group Meeting
+#### Recording
 https://otter.ai/u/US-GT_QGrHO0edIVeo4Oq71qeAM?tab=summary&utm_campaign=meeting_summary_outline_only&utm_is_new_user=true&utm_source=meeting_summary_outline_only
 
 ## Participants:
