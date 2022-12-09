@@ -11,7 +11,7 @@ Cardanon Anoncred Objects should have the following format:
 Anonced Objects must be stored in Cardano Blockcahain as transaction metadata, and to simplify reference and lookup the `objectId` is defined as the transaction hash of the transaction used to publish that metadata on the blockchain.
 
 ## Cardano Anoncred Objects
-The Cardano Anoncred Objects stored as transaction metadata consist of a JSON object with two parts: the `ResourceObject` itself and the `ResourceObjectMetadata` as in the following example:
+The Cardano Anoncred Objects stored as transaction metadata consist of a JSON object with two parts: the `ResourceObject` itself and the `ResourceObjectMetadata` as shown in the following example:
 
 ```
 {
@@ -35,16 +35,16 @@ The Cardano Anoncred Objects stored as transaction metadata consist of a JSON ob
 ```
 Where:
 
-- `resourceURI`: is the object identifier as defined above. It includes the publidher DID and objectId that is the transaction hash. Since the transaction hash is dependat on the content, this field must not be stored in the transaction metadata but recontrustect after being retrieved and added to the object.
+- `resourceURI`: is the object identifier as defined above. It includes the publidher DID and `objectId` that corresponds to the transaction hash. Since the transaction hash depends on its content, this field can not be stored in the transaction metadata but reconstructed after retrieval and added to the object.
 - `resourceName`: a string that identifies the resource
 - `resourceFamily`: "anoncreds". The family can be extended to future versions of Anoncreds like "anoncreds2.0"
 - `resourceType`: one of SCHEMA | CRED_DEF | REV_REG | REV_REG_ENTRY
 - `resourceVersion`: the version of the resource
 - `mediaType`: "application/json"
 - `created`: date in the format 2020-12-20T19:17:47Z
-- `checksum`: the MD5 chechsum of the ResourceObject
+- `checksum`: the MD5 digest of the `ResourceObject`
 - `publisherId`: the DID of the publisher
-- `publisherSignature`: the signature of the ResourceObject using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
+- `publisherSignature`: the signature of the `ResourceObject` using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
 
 
 ## AnonCred Resource Object
@@ -140,20 +140,27 @@ Resource Objects based on its type:
 }
 ```
 
-
 ## Consideration for publishing AnonCred objects in Cardano Blockchain as Transaction Metadata
-(TBD)
+- The `resourceURI` can not be stored in the transaction metadata and must be reconstructed after the transaction is submitted to the blockchain
+- Currenctly, metadata field values can not be longer that 64 characters. If a field exceed that length, it shoud be stored as an array of strings and recosntructed back as one string after retrieval.
+- In order to locate all `REV_REG_ENTRY`, we need to scan all blocks produced after creation of `REV_REG`. In order to facilitate the search, a random uint32 should be generated and used as metadata key for the `REV_REG` and all subsequent `REV_REG_ENTRY`. Blockchain databases are ussually indexed by the metadata key and queries can be speed up if are filtered by that field.
 
-## Retrieve AnonCred objects
-Cardano Anoncred Object can be retrieved from the blockchain by searching for a transaction by the transaction hash defined in `objectId`. It is encouraged that after retreiving a transaction, the
 
-`checkSum` and 
+## Retrieving AnonCred objects
+Cardano Anoncred Objects can be retrieved from the blockchain by searching for a transaction that matchs the transaction hash defined in `objectId`. It's encouraged that a validatios takes place to:
+- verify the checksum of the `ResourceObject`
+- verify the `publisherSignature` against the keys of the publisher DID
 
 ## Generate and store `TAIL_FILE`
 (TBD)
 Use Indy Tails Server?
 
 ## Query AnonCred Objects
-(TBD)
-Cheqd implemented a rest query based on the AnonCred Object Metatda, for example:
-`https://resolver.cheqd.net/1.0/identifiers/did:cheqd:mainnet:zF7rhDBfUt9d1gJPjx7s1J?resourceName=credDefDegree&resourceType=claimDef&versionTime=2022-08-21T08:40:00Z`
+It is encouraged to implement an indexed database of Resource Objets in order to perform queries for resources published by a DID.
+Valid query fields are:
+- `resourceURI`
+- `resourceName`
+- `resourceFamily`
+- `resourceType`
+- `resourceVersion`
+- `created`
