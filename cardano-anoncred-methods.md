@@ -65,7 +65,7 @@ Resource Objects based on its type:
   "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
   "type": "CL",
   "tag": "latest",
-  "data": {
+  "value": {
     "primary": {
       "n": "779...397",
       "r": {
