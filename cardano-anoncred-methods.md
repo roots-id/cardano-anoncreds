@@ -53,28 +53,31 @@ Resource Objects based on its type:
 ### Schema `SCHEMA`
 ```
 {
-    "name": "Example schema",
-    "version": "0.0.1",
-    "attr_names": ["name", "age", "vmax"]
+  "name": "Example schema",
+  "version": "0.0.1",
+  "attr_names": ["name", "age", "vmax"]
 }
 ```
 
 ### Credential definition `PUBLIC_CRED_DEF`
 ```
 {
+  "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
+  "type": "CL",
+  "tag": "latest",
   "data": {
     "primary": {
       "n": "779...397",
       "r": {
-            "birthdate": "294...298",
-            "birthlocation": "533...284",
-            "citizenship": "894...102",
-            "expiry_date": "650...011",
-            "facephoto": "870...274",
-            "firstname": "656...226",
-            "master_secret": "521...922",
-            "name": "410...200",
-            "uuid": "226...757"
+        "birthdate": "294...298",
+        "birthlocation": "533...284",
+        "citizenship": "894...102",
+        "expiry_date": "650...011",
+        "facephoto": "870...274",
+        "firstname": "656...226",
+        "link_secret": "521...922",
+        "name": "410...200",
+        "uuid": "226...757"
       },
       "rctxt": "774...977",
       "s": "750..893",
@@ -93,48 +96,35 @@ Resource Objects based on its type:
       "u": "1 18E...000",
       "y": "1 068...000"
     }
-  },
-  "ref": "7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7",
-  "signature_type": "CL",
-  "tag": "credDefDegree"
+  }
 }
 ```
 
 
 ### Revocation registry `REV_REG`
 ```
-
 {
-  "data": {
-    "credDefId": "zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree",
-    "id": "zF7rhDBfUt9d1gJPjx7s1J:4:zF7rhDBfUt9d1gJPjx7s1J:3:CL:7BPMqYgYLQni258J8JPS8K:2:degreeSchema:1.5.7:credDefDegree:CL_ACCUM:degreeCredRevRegDef",
-    "revocDefType": "CL_ACCUM",
-    "tag": "degreeCredRevRegDef",
-    "value": {
-      "issuanceType": "ISSUANCE_BY_DEFAULT",
-      "maxCredNum": 1024,
-      "publicKeys": {
-        "accumKey": {
-          "z": "1 0BB...386"
-        }
-      },
-      "tailsHash": "BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH",
-      "tailsLocation": "https://api.portal.streetcred.id/agent/tails/BrCqQS487HcdLeihGwnk65nWwavKYfrhSrMaUpYGvouH"
+  "type": "CL_ACCUM",
+  "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
+  "tag": "MyCustomCredentialDefinition",
+  "publicKeys": {
+    "accumKey": {
+      "z": "1 0BB...386"
     }
-  }
+  },
+  "maxCredNum": 666,
+  "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+  "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
 }
 ```
 
 ### Revocation registry entries `REV_REG_ENTRY`
 ```
 {
-  "data": {
-    "revocDefType": "CL_ACCUM",
-    "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
-    "value": {
-      "accum": "15 05B...94D"
-      "revoked": ["55", "125", "166", "208"]
-    }
+  "revocDefType": "CL_ACCUM",
+  "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
+  "value": {
+    "accum": "21 10B...33D"
   }
 }
 ```
