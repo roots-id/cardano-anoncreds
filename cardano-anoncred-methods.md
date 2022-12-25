@@ -53,7 +53,6 @@ Resource Objects based on its type:
 ### Schema `SCHEMA`
 ```
 {
-    "id": "https://www.did.example/schema.json",
     "name": "Example schema",
     "version": "0.0.1",
     "attr_names": ["name", "age", "vmax"]
