@@ -9,7 +9,7 @@ AnonCreds, HTTP AnonCreds, and cheqd AnonCreds.
 Working documents:
 - [Cardano Anoncreds Method](cardano-anoncred-methods.md)
 - [Python Reference Implementation](https://github.com/roots-id/cardano-anoncreds/tree/main/reference-implementations/py)
-- [JavaScritpt Reference Implementation](https://github.com/roots-id/cardano-anoncreds/tree/main/reference-implementations/js)
+- [TypeScritpt Reference Implementation](https://github.com/roots-id/cardano-anoncreds/tree/main/reference-implementations/js)
 
 The ledger-agnostic [AnonCred Specification](https://hyperledger.github.io/anoncreds-spec) is a work-in-progress project from the AnonCreds Specification Working Group at [Linux Hyperledger Foundation](https://www.hyperledger.org). All interested are welcome to participate and collaborate also into the Hyperledger AnonCred WG. 
 

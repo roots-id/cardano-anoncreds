@@ -8,7 +8,6 @@ from blockfrost import BlockFrostApi, ApiError, ApiUrls
 from pycardano import * 
 from textwrap import wrap
 from threading import Timer
-from  pprint import pp
 import os
 import json
 import random
@@ -43,6 +42,7 @@ class Cardano:
         - validate anoncreds object against models
         - validate signature
         - low balance warning
+        - implementy query for objetcs
 
     """
 
@@ -70,7 +70,7 @@ class Cardano:
             print("Missing environment variable CARDANO_ADDRESS_CBORHEX")
             exit(1)
 
-        balance = self.getaddressBalance()
+        balance = self.getAddressBalance()
         if balance < MINIMUN_BALANCE:
             print("Insuficient funds in address",self.payment_addr.encode())
             exit(1)
@@ -177,6 +177,7 @@ class Cardano:
         return meta_json
 
     def queryObject(self, resource_URI):
+        #TODO: implement queryObject
         return
     
     def publishAnoncredObject(self, anoncred_object,anoncred_object_metadata, metadata_prefix: Optional[int] = None) -> str:
@@ -267,7 +268,7 @@ class Cardano:
                 accumulators.append(meta_json["ResourceObject"])
         return accumulators
 
-    def getaddressBalance(self):
+    def getAddressBalance(self):
         try:
             address = self.api.address(address=self.payment_addr.encode())
             return int(address.amount[0].quantity)
@@ -283,7 +284,7 @@ class Cardano:
     def spreadUTxOs(self):
 
         utxos = self.api.address_utxos(self.payment_addr.encode())
-        balance = self.getaddressBalance()
+        balance = self.getAddressBalance()
         if balance > MINIMUN_BALANCE and len(utxos) < MINIMUN_UTXO:
             print("Spreading UTXOs")
             tx_amount = int((balance - 10000000) / MINIMUN_UTXO)
