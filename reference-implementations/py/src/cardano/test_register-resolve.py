@@ -86,9 +86,6 @@ rev_reg_id = cardano.registerRevReg(
 print("REV_REG:",rev_reg_id)
 print("\n")
 
-print("Waiting 60 seconds for REV_REG to be written to the ledger")
-time.sleep(60)
-
 print("Registering REV_REG_ENTRY")
 rev_reg_entry_id = cardano.registerRevRegEntry(
     {

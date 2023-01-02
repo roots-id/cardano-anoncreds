@@ -40,7 +40,6 @@ class Cardano:
         - spreadUTxOs() will spread UTXOs in the address to avoid this situation.
 
         TODO:
-        - in memory cache for objects
         - validate anoncreds object against models
         - validate signature
         - low balance warning
@@ -181,8 +180,6 @@ class Cardano:
         return
     
     def publishAnoncredObject(self, anoncred_object,anoncred_object_metadata, metadata_prefix: Optional[int] = None) -> str:
-        print("Receive Anoncred Object")
-
         if not metadata_prefix:  metadata_prefix = random.randint(0, 2**32-1)
         object = {
                 "ResourceObject": anoncred_object,
@@ -217,7 +214,7 @@ class Cardano:
             # select utxos
             utxo_sum = 0
             utxo_to_remove = []
-            print("Qty of utxo",len(self.available_utxos))
+            # print("Qty of utxo",len(self.available_utxos))
             for u in self.available_utxos:
                 utxo_sum = utxo_sum + int(u.amount[0].quantity)
                 builder.add_input(
@@ -234,6 +231,12 @@ class Cardano:
             signed_tx = builder.build_and_sign([self.payment_signing_key], change_address=self.payment_addr)
             # Submit transaction
             self.context.submit_tx(signed_tx.to_cbor())
+            self.ledger_cache[str(signed_tx.id)] = [
+                {
+                    "label": list(meta.keys())[0],
+                    "json_metadata": meta[list(meta.keys())[0]]
+                }
+            ]
             self.pending_tx.remove(meta)
             return signed_tx.id
         except Exception as e:
@@ -247,9 +250,10 @@ class Cardano:
             self.submitTransaction(m)
 
     def getObject(self, tx_id):
-        #tx = self.api.transaction(tx_id)
-        meta = self.api.transaction_metadata(tx_id, return_type='json')
-        # print("label", meta[0]['label'])
+        if tx_id in self.ledger_cache:
+            meta = self.ledger_cache[tx_id]
+        else:
+            meta = self.api.transaction_metadata(tx_id, return_type='json')
         return meta
 
     def getRevocationEntries(self, meta_key, rev_reg_id, publisher_DID):
@@ -280,7 +284,6 @@ class Cardano:
 
         utxos = self.api.address_utxos(self.payment_addr.encode())
         balance = self.getaddressBalance()
-        print(balance, len(utxos))
         if balance > MINIMUN_BALANCE and len(utxos) < MINIMUN_UTXO:
             print("Spreading UTXOs")
             tx_amount = int((balance - 10000000) / MINIMUN_UTXO)
