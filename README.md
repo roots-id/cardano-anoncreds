@@ -1,4 +1,4 @@
-# Cardano AnonCreds
+# Cardano AnonCreds Method
 This repository hosts information regarding the implementation of AnonCreds Methods on Cardano. It's a collaborative working group with base on the Cardano SSI Alliance (CSSIA). We meet every other Friday ([meeting info](meeting-notes.md)).
 
 The AnonCreds (Anonymous Credentials) specification is based on the open-source verifiable credential implementation of AnonCreds that has been in use since 2017, initially as part of the Hyperledger Indy open-source project and now in the [Hyperledger AnonCreds](https://wiki.hyperledger.org/display/ANONCREDS/Hyperledger+AnonCreds) project. The extensive use of AnonCreds around the world has made it a de facto standard for ZKP-based verifiable credentials.
