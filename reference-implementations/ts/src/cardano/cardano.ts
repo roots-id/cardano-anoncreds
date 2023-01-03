@@ -22,12 +22,18 @@ import { Options } from '@blockfrost/blockfrost-js/lib/types';
 import * as cardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
 import {randomBytes } from 'crypto'
 import cbor from 'cbor'
+import {MD5} from 'crypto-js'
+import { ISchema } from './models/ISchema';
+import { IObjectMetadata } from './models/IObjectMetadata';
+import { ICredDef } from './models/ICredDef';
+import { IRevReg } from './models/IRevReg';
+import { IRevRegEntry } from './models/IRevRegEntry';
 
 const NETWORK = "preview"
 const MINIMUN_BALANCE = 5000000
 const TRANSACTION_AMOUNT = 1000000
 const MINIMUN_UTXO = 20
-const ALLOWS_ASYNC = false
+const ALLOWS_ASYNC = true
 const QUEUE_DURATION = 60
 
 
@@ -66,10 +72,91 @@ export default class Cardano {
         this.getUTXOs()
     }
 
+
+    public async registerSchema(schema: ISchema, publisher_DID: string, signature: string): Promise<string> {
+        if (await this.validateSignature(schema, publisher_DID, signature)){
+            const objectMetadata: IObjectMetadata = {
+                resourceURI: "",
+                resourceName: schema["name"],
+                resourceFamily: "anoncreds",
+                resourceType: "SCHEMA",
+                resourceVersion: "v1",
+                mediaType: "application/json",
+                created: (new Date()).toISOString(),
+                checkSum: MD5(JSON.stringify(schema)).toString(),
+                publisherId: publisher_DID,
+                publisherSignature: signature
+            }
+            const txId = await this.publishAnoncredObject(schema,objectMetadata)
+            return publisher_DID + "/resources/" + txId
+        } else { return "Invalid Signature"}
+    }
+
+    public async registerCredDef(credDef: ICredDef, publisher_DID: string, signature: string): Promise<string> {
+        if (await this.validateSignature(credDef, publisher_DID, signature)){
+            const objectMetadata: IObjectMetadata = {
+                resourceURI: "",
+                resourceName: "CL",
+                resourceFamily: "anoncreds",
+                resourceType: "CRED_DEF",
+                resourceVersion: "v1",
+                mediaType: "application/json",
+                created: (new Date()).toISOString(),
+                checkSum: MD5(JSON.stringify(credDef)).toString(),
+                publisherId: publisher_DID,
+                publisherSignature: signature
+            }
+            const txId = await this.publishAnoncredObject(credDef,objectMetadata)
+            return publisher_DID + "/resources/" + txId
+        } else { return "Invalid Signature"}
+    }
+
+    public async registerRevReg(revReg: IRevReg, publisher_DID: string, signature: string): Promise<string> {
+        if (await this.validateSignature(revReg, publisher_DID, signature)){
+            const objectMetadata: IObjectMetadata = {
+                resourceURI: "",
+                resourceName: "CL_ACUMM",
+                resourceFamily: "anoncreds",
+                resourceType: "REV_REG",
+                resourceVersion: "v1",
+                mediaType: "application/json",
+                created: (new Date()).toISOString(),
+                checkSum: MD5(JSON.stringify(revReg)).toString(),
+                publisherId: publisher_DID,
+                publisherSignature: signature
+            }
+            const txId = await this.publishAnoncredObject(revReg,objectMetadata)
+            return publisher_DID + "/resources/" + txId
+        } else { return "Invalid Signature"}
+    }
+
+    public async registerRevRegEntry(revRegEntry: IRevRegEntry, publisher_DID: string, signature: string): Promise<string> {
+        if (await this.validateSignature(revRegEntry, publisher_DID, signature)){
+            const objectMetadata: IObjectMetadata = {
+                resourceURI: "",
+                resourceName: "CL_ACUMM",
+                resourceFamily: "anoncreds",
+                resourceType: "REV_REG_ENTRY",
+                resourceVersion: "v1",
+                mediaType: "application/json",
+                created: (new Date()).toISOString(),
+                checkSum: MD5(JSON.stringify(revRegEntry)).toString(),
+                publisherId: publisher_DID,
+                publisherSignature: signature
+            }
+            const revRegId = revRegEntry.revocRegDefId
+            const objectId = revRegId.split("/").slice(-1)[0]
+            const meta = await this.getObject(objectId)
+            const prefix = parseInt(meta[0]['label'])
+
+            const txId = await this.publishAnoncredObject(revRegEntry,objectMetadata, prefix)
+            return publisher_DID + "/resources/" + txId
+        } else { return "Invalid Signature"}
+    }
+
     public async resolveObject(resourceURI: string): Promise<any> {
         const objectId = resourceURI.split("/").slice(-1)[0]
         const meta = await this.getObject(objectId)
-        console.log(meta[0].json_metadata.join(''))
         let metaJson = JSON.parse(meta[0].json_metadata.join(''))
         metaJson["ResourceObjectMetadata"]["resourceURI"] = resourceURI
 
@@ -85,18 +172,17 @@ export default class Cardano {
     }
 
 
-    async publishAnoncredObject(anoncredObject: any,anoncredObjectMetadata: any, metadataPrefix?: bigint): Promise<string>{
+    async publishAnoncredObject(anoncredObject: any,anoncredObjectMetadata: any, metadataPrefix?: number): Promise<string>{
         if (!metadataPrefix) {
-            const metadataPrefix = randomBytes(4).readUInt32BE(0)
+            metadataPrefix = randomBytes(4).readUInt32BE(0)
         }
         const object = {
             ResourceObject: anoncredObject,
             ResourceObjectMetadata: anoncredObjectMetadata
         }
-        const meta = {
-            metadata_prefix: JSON.stringify(object).match(/(.{1,64})/g)
-        }
-
+        // let meta: Map<number, Array<string>> = new Map()
+        let meta: any = {}
+        meta[metadataPrefix] = JSON.stringify(object).match(/(.{1,64})/g)
         return await this.processTransaction(meta)
 
     }
@@ -104,11 +190,11 @@ export default class Cardano {
 
     async processTransaction(meta: any): Promise<string> {
         let txHash = ""
-        if (this.timer !== null) {
+        if (this.timer == null) {
             this.getUTXOs()
             this.pendingTx.push(meta)
             txHash = await this.submitTransaction(meta)
-            this.timer = setTimeout(() => this.flushQueue(), 90)
+            this.timer = setTimeout(() => this.flushQueue(), QUEUE_DURATION * 1000)
         } else if (this.availableUTXOs.length > 0) {
             this.pendingTx.push(meta)
             txHash = await this.submitTransaction(meta)

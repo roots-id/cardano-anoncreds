@@ -305,3 +305,6 @@ class Cardano:
         # verify signature
         return True
 
+    def createAddress(self):
+        # TODO: implement createAddress
+        return

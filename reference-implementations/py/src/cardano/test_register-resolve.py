@@ -12,7 +12,7 @@ schema_id = cardano.registerSchema(
     {
         "name": "Test Schema",
         "version": "1.0",
-        "attributes": ["name", "age", "height"]
+        "attr_names": ["birthdate", "birthlocation", "citizenship", "expiry_date", "facephoto", "firstname", "link_secret", "name", "uuid"]
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -114,7 +114,7 @@ rev_reg_entry_id = cardano.registerRevRegEntry(
         "prevAccum": "21 128...C3B",
         "issued": [],
         "revoked": [ 172 ]
-    }
+        }
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -140,7 +140,7 @@ rev_reg_entry_id = cardano.registerRevRegEntry(
 print("REV_REG_ENTRY 3",rev_reg_entry_id)
 print("\n")
 
-print("Waiting 60 seconds for REV_REG_ENTRY to be written to the ledger")
+print("Waiting 60 seconds for blockchain's block confirmations")
 time.sleep(60)
 
 print("Resolving SCHEMA")

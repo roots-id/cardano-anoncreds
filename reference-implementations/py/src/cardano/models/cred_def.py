@@ -15,7 +15,7 @@ class CredDefRevocation(TypedDict):
     h1: str
     h2: str
     h_cap: str
-    Htilde: str
+    htilde: str
     pk: str
     u: str
     y: str
