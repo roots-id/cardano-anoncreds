@@ -25,7 +25,7 @@ MINIMUN_BALANCE = 5000000
 TRANSACTION_AMOUNT = 1000000
 MINIMUN_UTXO = 20
 ALLOWS_ASYNC = True
-QUEUE_DURATION = 60
+QUEUE_DURATION = 90
 
 class Cardano:
     """
@@ -44,6 +44,7 @@ class Cardano:
         - validate signature
         - low balance warning
         - implementy query for objetcs
+        - metadata labels pagination
 
     """
 
@@ -198,7 +199,7 @@ class Cardano:
             self.getUTXOs()
             self.pending_tx.append(meta)
             tx_hash = self.submitTransaction(meta)
-            self.timer = Timer(90, self.flushQueue)
+            self.timer = Timer(QUEUE_DURATION, self.flushQueue)
             self.timer.start()
         elif len(self.available_utxos) > 0:
             self.pending_tx.append(meta)

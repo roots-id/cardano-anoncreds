@@ -1,3 +1,5 @@
+import { IRevRegEntry } from "./IRevRegEntry"
+
 export interface IRevRegAccumKey {
     z: string
 }
@@ -14,4 +16,5 @@ export interface IRevReg {
     maxCredNum: number
     tailsLocation: string
     tailsHash: string
+    RevRegEntries?: IRevRegEntry[]
 }

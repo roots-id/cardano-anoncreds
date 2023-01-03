@@ -11,10 +11,8 @@ Environment variables required:
 
 
 // TODO 
-// - models
 // - error handling
-// - caching
-// - TS any
+// - metadata label pagination
 */
 
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js'
@@ -28,13 +26,14 @@ import { IObjectMetadata } from './models/IObjectMetadata';
 import { ICredDef } from './models/ICredDef';
 import { IRevReg } from './models/IRevReg';
 import { IRevRegEntry } from './models/IRevRegEntry';
+import { IMetadata } from './models/IMetadata';
 
 const NETWORK = "preview"
 const MINIMUN_BALANCE = 5000000
 const TRANSACTION_AMOUNT = 1000000
 const MINIMUN_UTXO = 20
 const ALLOWS_ASYNC = true
-const QUEUE_DURATION = 60
+const QUEUE_DURATION = 90
 
 
 export default class Cardano {
@@ -43,7 +42,7 @@ export default class Cardano {
     private readonly paymentAddress: string
     private ledgerCache: Map<string, any>
     private availableUTXOs: any[]
-    private timer: any
+    private timer: NodeJS.Timeout | null
     private pendingTx: any[]
     private privateKey: cardanoWasm.PrivateKey
     
@@ -154,7 +153,7 @@ export default class Cardano {
         } else { return "Invalid Signature"}
     }
 
-    public async resolveObject(resourceURI: string): Promise<any> {
+    public async resolveObject(resourceURI: string): Promise<IMetadata> {
         const objectId = resourceURI.split("/").slice(-1)[0]
         const meta = await this.getObject(objectId)
         let metaJson = JSON.parse(meta[0].json_metadata.join(''))
@@ -172,7 +171,7 @@ export default class Cardano {
     }
 
 
-    async publishAnoncredObject(anoncredObject: any,anoncredObjectMetadata: any, metadataPrefix?: number): Promise<string>{
+    async publishAnoncredObject(anoncredObject: ISchema | ICredDef | IRevReg | IRevRegEntry,anoncredObjectMetadata: IObjectMetadata, metadataPrefix?: number): Promise<string>{
         if (!metadataPrefix) {
             metadataPrefix = randomBytes(4).readUInt32BE(0)
         }
@@ -190,17 +189,18 @@ export default class Cardano {
 
     async processTransaction(meta: any): Promise<string> {
         let txHash = ""
-        if (this.timer == null) {
+        if (this.timer === null) {
             this.getUTXOs()
             this.pendingTx.push(meta)
             txHash = await this.submitTransaction(meta)
-            this.timer = setTimeout(() => this.flushQueue(), QUEUE_DURATION * 1000)
+            this.timer = setTimeout(async () => await this.flushQueue(), QUEUE_DURATION * 1000)
         } else if (this.availableUTXOs.length > 0) {
             this.pendingTx.push(meta)
             txHash = await this.submitTransaction(meta)
         } else {
-            const txHash = "Queued operation"
-            if (ALLOWS_ASYNC) {
+            txHash = "queued_operation"
+            if (ALLOWS_ASYNC === true) {
+                console.log("Queued operation")
                 this.pendingTx.push(meta)
             }
         }
@@ -244,7 +244,7 @@ export default class Cardano {
                 utxoToRemove.push(utxo)
                 if (utxoSum > (TRANSACTION_AMOUNT + 2000000)){ break}
             }
-            utxoToRemove.forEach(utxo => this.availableUTXOs.splice(this.availableUTXOs.indexOf(utxo), 1))
+            
             txBuilder.add_output(
                 cardanoWasm.TransactionOutput.new(
                     cardanoWasm.Address.from_bech32(this.paymentAddress),
@@ -285,23 +285,26 @@ export default class Cardano {
                 }
             ])
             this.pendingTx.splice(this.pendingTx.indexOf(meta), 1)
-
-
+            utxoToRemove.forEach(utxo => this.availableUTXOs.splice(this.availableUTXOs.indexOf(utxo), 1))
             return this.toHexString(txHash.to_bytes())
         } catch (error) {
             console.log(error)
             this.availableUTXOs = []
-            return "error"
+            if (this.timer === null) {
+                this.timer = setTimeout(async () => await this.flushQueue(), QUEUE_DURATION * 1000)
+            }
+            return "tx_queued."
         }
 
     }
 
     async flushQueue(): Promise<void> {
         console.log("Flushing Queue")
-        this.getUTXOs()
+        await this.getUTXOs()
         this.pendingTx.forEach(async m => {
             await this.submitTransaction(m)
         })
+        this.timer = null
             
     }
 
@@ -313,9 +316,9 @@ export default class Cardano {
         }
     }
 
-    async getRevocationEntries(metaKey: string, revRegId: string, publisherDID: string): Promise<any>{
+    async getRevocationEntries(metaKey: string, revRegId: string, publisherDID: string): Promise<IRevRegEntry[]>{
         const metas = await this.blockfrostAPI.metadataTxsLabel(metaKey)
-        let accumulators: any[] = []
+        let accumulators: IRevRegEntry[] = []
         metas.forEach(m => {
             let meta = ""
 
@@ -346,7 +349,7 @@ export default class Cardano {
         }
       }
 
-    public async getUTXOs(): Promise<any> {
+    public async getUTXOs(): Promise<void> {
         try {
             this.availableUTXOs = await this.blockfrostAPI.addressesUtxos(this.paymentAddress)
         } catch (error) {
@@ -354,7 +357,7 @@ export default class Cardano {
         }
     }
 
-    async validateSignature(object: any, publisherDID: string, signature: string): Promise<boolean> {
+    async validateSignature(object: ISchema | ICredDef | IRevReg | IRevRegEntry, publisherDID: string, signature: string): Promise<boolean> {
         // # TODO
         // # resolve DID
         // # get public key from DID Doc
