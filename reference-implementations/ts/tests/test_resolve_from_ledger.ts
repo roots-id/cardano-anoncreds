@@ -1,4 +1,4 @@
-import Cardano from './cardano'
+import Cardano from '../src/cardano/cardano'
 
 
 (async () => {

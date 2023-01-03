@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@blockfrost/blockfrost-js": "^5.2.0",
+    "cbor": "^8.1.0",
     "ts-node": "^10.9.1"
   }
 }
