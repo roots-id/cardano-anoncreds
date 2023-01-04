@@ -205,7 +205,7 @@ class Cardano:
             self.pending_tx.append(meta)
             tx_hash = self.submitTransaction(meta)
         else:
-            tx_hash = "Queued operation"
+            tx_hash = "queued_operation"
             if ALLOWS_ASYNC: 
                 self.pending_tx.append(meta)
         return tx_hash
@@ -217,7 +217,6 @@ class Cardano:
             # select utxos
             utxo_sum = 0
             utxo_to_remove = []
-            # print("Qty of utxo",len(self.available_utxos))
             for u in self.available_utxos:
                 utxo_sum = utxo_sum + int(u.amount[0].quantity)
                 builder.add_input(
@@ -245,12 +244,16 @@ class Cardano:
         except Exception as e:
             print(e)
             self.available_utxos = []
+            if not self.timer.is_alive():
+                self.timer.start()
 
     def flushQueue(self):
         print("Flushing Queue")
         self.getUTXOs()
+        self.timer = self.timer = Timer(QUEUE_DURATION, self.flushQueue)
         for m in self.pending_tx.copy():
             self.submitTransaction(m)
+        
 
     def getObject(self, tx_id):
         if tx_id in self.ledger_cache:
@@ -290,7 +293,6 @@ class Cardano:
         if balance > MINIMUN_BALANCE and len(utxos) < MINIMUN_UTXO:
             print("Spreading UTXOs")
             tx_amount = int((balance - 10000000) / MINIMUN_UTXO)
-            print(tx_amount)
             builder = TransactionBuilder(self.context)
             builder.add_input_address(self.payment_addr)
             for _ in range(MINIMUN_UTXO):
