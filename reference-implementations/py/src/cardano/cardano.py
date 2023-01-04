@@ -11,6 +11,7 @@ from threading import Timer
 import os
 import json
 import random
+import time
 from models.schema import Schema
 from models.object_metadata import ObjectMetadata
 from models.cred_def import CredDef
@@ -70,7 +71,7 @@ class Cardano:
             self.payment_addr = Address(payment_verification_key.hash(), None, network=NETWORK)
         except KeyError:
             print("Missing environment variable CARDANO_ADDRESS_CBORHEX")
-            exit(1)
+            self.createEnterpriseAddress()
 
         balance = self.getAddressBalance()
         if balance < MINIMUN_BALANCE:
@@ -308,6 +309,27 @@ class Cardano:
         # verify signature
         return True
 
-    def createAddress(self):
-        # TODO: implement createAddress
-        return
+    def createEnterpriseAddress(self):
+        payment_key_pair = PaymentKeyPair.generate()
+        payment_signing_key = payment_key_pair.signing_key
+        payment_verification_key = payment_key_pair.verification_key
+        payment_address = Address(payment_verification_key.hash(), None, network=NETWORK).encode()
+        print("Enterprise address:", payment_address)
+        print("Private Key CBORHex:",payment_signing_key.to_cbor())
+        self.payment_signing_key = PaymentSigningKey.from_cbor(payment_signing_key.to_cbor())
+        payment_verification_key = PaymentVerificationKey.from_signing_key(self.payment_signing_key)
+        self.payment_addr = Address(payment_verification_key.hash(), None, network=NETWORK)
+        balance = 0
+        while balance < MINIMUN_BALANCE:
+            balance = self.getAddressBalance()
+            print("Waiting for funds...")
+            time.sleep(30)
+        print("Funds received:", balance/1000, "ADA")
+        self.getUTXOs()
+        print("Qty of UTXOs:", len(self.available_utxos))
+        self.spreadUTxOs()
+        print("Waiting for blockchain confirmations...")
+        time.sleep(60)
+        self.getUTXOs()
+        print("Qty of UTXOs:", len(self.available_utxos))
+        exit(1)

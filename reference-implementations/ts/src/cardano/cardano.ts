@@ -340,7 +340,7 @@ export default class Cardano {
     }
         
 
-    public async getAddressbalance (): Promise<number> {
+    async getAddressbalance (): Promise<number> {
         try {
             const address = await this.blockfrostAPI.addresses(this.paymentAddress)
             return +address.amount[0].quantity
@@ -349,7 +349,7 @@ export default class Cardano {
         }
       }
 
-    public async getUTXOs(): Promise<void> {
+    async getUTXOs(): Promise<void> {
         try {
             this.availableUTXOs = await this.blockfrostAPI.addressesUtxos(this.paymentAddress)
         } catch (error) {
@@ -371,4 +371,10 @@ export default class Cardano {
         }).join('');
       }
 
+    public async createEnterpriseAddress(): Promise<void> {
+    }
+
+    public async spreadUTxOs(): Promise<void> {
+
+    }
 }
