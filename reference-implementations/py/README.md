@@ -15,14 +15,14 @@ pip install -r requirements.txt
 -  create a Cardano Address
 ```
 cd src/cardano
-python create_wallet.py
+python create_address.py
 ```
 The script creates a Cardano Enterprise Address and displays the public address and private key. For example:
 ```
 Enterprise address: 
 Private Key CBORHex:
 ```
-The script will wait until address receives ADA and will spread UTxO if needed.
+The script will wait until address receives ADA and will spread UTxO if needed. So, while the script is running you need to fund the address.
 - fund your address with test ADA from [Testnets faucet](https://docs.cardano.org/cardano-testnet/tools/faucet)
 - add the private key the environmental variable `CARDANO_ADDRESS_CBORHEX`. This step is just for demo purposes with test ADA. Storing a private key in an environmental variable is highly insecure!!!
 ```

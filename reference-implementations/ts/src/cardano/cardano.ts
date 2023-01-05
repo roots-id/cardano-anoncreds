@@ -9,29 +9,33 @@ Environment variables required:
     - If not, the operation will be queued and processed when UTXOs are available. Need to define how to retrieve tx_hash in this case.
     - spreadUTxOs() will spread UTXOs in the address to avoid this situation.
 
-
-// TODO 
-// - error handling
-// - metadata label pagination
+TODO:
+    - metadata label pagination
+    - improve error handling
+    - validate anoncreds object against models
+    - validate signature
+    - low balance warning
+    - implementy query for objetcs
 */
 
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js'
-import { Options } from '@blockfrost/blockfrost-js/lib/types';
-import * as cardanoWasm from '@emurgo/cardano-serialization-lib-nodejs';
+import { Options } from '@blockfrost/blockfrost-js/lib/types'
+import * as cardanoWasm from '@emurgo/cardano-serialization-lib-nodejs'
 import {randomBytes } from 'crypto'
 import cbor from 'cbor'
 import {MD5} from 'crypto-js'
-import { ISchema } from './models/ISchema';
-import { IObjectMetadata } from './models/IObjectMetadata';
-import { ICredDef } from './models/ICredDef';
-import { IRevReg } from './models/IRevReg';
-import { IRevRegEntry } from './models/IRevRegEntry';
-import { IMetadata } from './models/IMetadata';
+import { ISchema } from './models/ISchema'
+import { IObjectMetadata } from './models/IObjectMetadata'
+import { ICredDef } from './models/ICredDef'
+import { IRevReg } from './models/IRevReg'
+import { IRevRegEntry } from './models/IRevRegEntry'
+import { IMetadata } from './models/IMetadata'
+import { mnemonicToEntropy } from 'bip39';
 
 const NETWORK = "preview"
 const MINIMUN_BALANCE = 5000000
 const TRANSACTION_AMOUNT = 1000000
-const MINIMUN_UTXO = 20
+const MINIMUM_UTXO = 20
 const ALLOWS_ASYNC = true
 const QUEUE_DURATION = 90
 
@@ -39,7 +43,7 @@ const QUEUE_DURATION = 90
 export default class Cardano {
 
     private readonly blockfrostAPI: BlockFrostAPI
-    private readonly paymentAddress: string
+    private paymentAddress: string
     private ledgerCache: Map<string, any>
     private availableUTXOs: any[]
     private timer: NodeJS.Timeout | null
@@ -50,25 +54,38 @@ export default class Cardano {
     constructor () 
     {
         const blockfrostProjectId = process.env.BLOCKFROST_API_KEY
-        const cardanoPrivateAddress = process.env.CARDANO_ADDRESS_CBORHEX
-        this.privateKey = cardanoWasm.PrivateKey.from_normal_bytes(new Uint8Array(cbor.decode(cardanoPrivateAddress!)))
-
-        this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
-            cardanoWasm.NetworkInfo.testnet().network_id(),
-            cardanoWasm.StakeCredential.from_keyhash(this.privateKey.to_public().hash())
-          ).to_address().to_bech32()
-
         this.ledgerCache = new Map()
         this.availableUTXOs = []
         this.timer = null
         this.pendingTx = []
+        this.paymentAddress = ""
         this.blockfrostAPI = new BlockFrostAPI(
             { 
                 projectId: blockfrostProjectId,
                 network: NETWORK
             } as Options
         )
-        this.getUTXOs()
+
+        if (process.env.CARDANO_ADDRESS_CBORHEX){
+            const cardanoPrivateAddress = process.env.CARDANO_ADDRESS_CBORHEX
+            this.privateKey = cardanoWasm.PrivateKey.from_normal_bytes(new Uint8Array(cbor.decode(cardanoPrivateAddress!)))
+            this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
+                cardanoWasm.NetworkInfo.testnet().network_id(),
+                cardanoWasm.StakeCredential.from_keyhash(this.privateKey.to_public().hash())
+              ).to_address().to_bech32()
+            this.getUTXOs()
+        } else {
+            this.privateKey  = cardanoWasm.PrivateKey.generate_ed25519()
+            this.createEnterpriseAddress()
+        }
+        
+        
+        
+
+        
+
+
+        
     }
 
 
@@ -371,10 +388,93 @@ export default class Cardano {
         }).join('');
       }
 
-    public async createEnterpriseAddress(): Promise<void> {
-    }
+    async createEnterpriseAddress(): Promise<void> {
 
-    public async spreadUTxOs(): Promise<void> {
+        this.privateKey  = cardanoWasm.PrivateKey.generate_ed25519()
+        this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
+            cardanoWasm.NetworkInfo.testnet().network_id(),
+            cardanoWasm.StakeCredential.from_keyhash(this.privateKey.to_public().hash())
+          ).to_address().to_bech32()
+        const cborhex = cbor.encode(this.privateKey.as_bytes().buffer).toString('hex')
+        console.log("Enterprise address: " + this.paymentAddress)
+        console.log("Private Key CBORHex: " + cborhex)
+        let balance = 0 
+        while (await this.getAddressbalance() < MINIMUN_BALANCE) {
+            balance = await this.getAddressbalance()
+            console.log("Waiting for funds...")
+            await new Promise(r => setTimeout(r, 30000))
+        }
+        console.log("Funds received: " + balance/1000, "ADA")
+        await this.getUTXOs()
+        console.log("Qty of UTXOs: " + this.availableUTXOs.length)
+        await this.spreadUTxOs()
+        console.log("Waiting for blockchain confirmations...")
+        await new Promise(r => setTimeout(r, 60000))
+        await this.getUTXOs()
+        console.log("Qty of UTXOs: ", this.availableUTXOs.length)
 
+    }    
+
+    async spreadUTxOs(): Promise<void> {
+        await this.getUTXOs()
+        let balance = await this.getAddressbalance()
+        if (balance > MINIMUN_BALANCE && this.availableUTXOs.length < MINIMUM_UTXO){
+            console.log("Spreading UTXOs")
+            const tx_amount = Math.floor((balance - 10000000) / MINIMUM_UTXO)
+            const latestEpoch = await this.blockfrostAPI.epochsLatest()
+            const protocolParams = await this.blockfrostAPI.epochsParameters(latestEpoch.epoch)
+            const latestBlock = await this.blockfrostAPI.blocksLatest()
+            const linearFee = cardanoWasm.LinearFee.new(
+                cardanoWasm.BigNum.from_str(protocolParams.min_fee_a.toString()),
+                cardanoWasm.BigNum.from_str(protocolParams.min_fee_b.toString())
+            )
+            const txBuilderCfg = cardanoWasm.TransactionBuilderConfigBuilder.new()
+                .fee_algo(linearFee)
+                .pool_deposit(cardanoWasm.BigNum.from_str(protocolParams.pool_deposit))
+                .key_deposit(cardanoWasm.BigNum.from_str(protocolParams.key_deposit))
+                .max_value_size(Number(protocolParams.max_val_size))
+                .max_tx_size(protocolParams.max_tx_size)
+                .coins_per_utxo_word(cardanoWasm.BigNum.from_str(protocolParams.coins_per_utxo_size!))
+                .build()
+
+            const txBuilder = cardanoWasm.TransactionBuilder.new(txBuilderCfg)
+            for (const utxo of this.availableUTXOs) {
+                txBuilder.add_input(
+                cardanoWasm.Address.from_bech32(this.paymentAddress),
+                cardanoWasm.TransactionInput.new(
+                    cardanoWasm.TransactionHash.from_bytes(
+                    Buffer.from(utxo.tx_hash, 'hex')),
+                    utxo.tx_index
+                ),
+                cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(utxo.amount[0].quantity))
+                );
+            }
+            for (const x of Array(MINIMUM_UTXO).keys()) {
+                txBuilder.add_output(
+                    cardanoWasm.TransactionOutput.new(
+                        cardanoWasm.Address.from_bech32(this.paymentAddress),
+                    cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(tx_amount.toString()))    
+                    ),
+                );
+            }
+
+            txBuilder.set_ttl(latestBlock.slot! + 600)
+
+            txBuilder.add_change_if_needed(cardanoWasm.Address.from_bech32(this.paymentAddress))
+            const txBody = txBuilder.build();
+            const txHash = cardanoWasm.hash_transaction(txBody);
+
+            const witnesses = cardanoWasm.TransactionWitnessSet.new();
+            const vkeyWitnesses = cardanoWasm.Vkeywitnesses.new();
+            const vkeyWitness = cardanoWasm.make_vkey_witness(txHash, this.privateKey);
+            vkeyWitnesses.add(vkeyWitness);
+            witnesses.set_vkeys(vkeyWitnesses);
+            // serialize CBOR transaction
+            const transaction = cardanoWasm.Transaction.new(
+                txBody,
+                witnesses
+            );
+            this.blockfrostAPI.txSubmit(transaction.to_bytes())
+        }
     }
 }
