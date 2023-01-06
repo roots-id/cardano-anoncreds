@@ -3,8 +3,17 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## January 6, 2022 Working Group Meeting <--- NEXT MEETING
+## January 20, 2022 Working Group Meeting <--- NEXT MEETING
 
+## January 6, 2022 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Rodolfo Miranda (RootsID)
+* Alex Andrei (RootsID)
+
+## Cardano AnonCreds Method
+* Rodolfo presented the first prototype driver for AnonCreds on Cardano!
+Recording https://drive.google.com/file/d/1JNKAK_-HPmgmfO6XL1NGkOYKdAmTf32k/view?usp=sharing
 
 ## December 9, 2022 Working Group Meeting
 Participants:
