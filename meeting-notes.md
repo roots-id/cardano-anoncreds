@@ -3,7 +3,17 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## February 3, 2023 Working Group Meeting <--- NEXT MEETING
+## February 17, 2023 Working Group Meeting <--- NEXT MEETING
+
+## February 3, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Alex Andrei (RootsID)
+
+## AnonCreds RS
+* It appears there is enough typescript support in AnonCreds-RS for us to do the smallest demo w/AnonCreds-Cardano driver.
+## AnonCreds v2
+* Mike Lodder wanted to know if there should be a new meeting to begin work towards a v2 that includes his updates.
 
 ## January 20, 2023 Working Group Meeting
 Participants:
