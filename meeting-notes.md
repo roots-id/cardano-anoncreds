@@ -4,15 +4,21 @@
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
 ## February 17, 2023 Working Group Meeting <--- NEXT MEETING
+Participants:
+* Lance Byrd (RootsID)
+* Alex Andrei (RootsID)
+
+### Verification Policies and Presentation Exchange
+* Alex and I talked about Verification Policies and https://identity.foundation/presentation-exchange/
 
 ## February 3, 2023 Working Group Meeting
 Participants:
 * Lance Byrd (RootsID)
 * Alex Andrei (RootsID)
 
-## AnonCreds RS
+### AnonCreds RS
 * It appears there is enough typescript support in AnonCreds-RS for us to do the smallest demo w/AnonCreds-Cardano driver.
-## AnonCreds v2
+### AnonCreds v2
 * Mike Lodder wanted to know if there should be a new meeting to begin work towards a v2 that includes his updates.
 
 ## January 20, 2023 Working Group Meeting
@@ -22,17 +28,17 @@ Participants:
 * Rodolfo Miranda (RootsID)
 * Alex Andrei (RootsID)
 
-## Cardano AnonCreds Method
+### Cardano AnonCreds Method
 * What dependencies does the typescript implementation have? We haven't tested in browser but the blockfrost and emurgo serialization should work in the browser.
 * Animo is creating a Rust library so all crypto, etc which should be useful with WASM for browser, etc. https://github.com/hyperledger/anoncreds-rs
 * Swift and Java and React Native support are coming
 * What would an interopathon at IIW look like?
 
-## Next steps:
+### Next steps:
 * We will adapt to the reference impl once it solidifies.
 * A Cardano CIP for AnonCreds now that we are a registerd method https://hyperledger.github.io/anoncreds-methods-registry/#cardano-anoncreds-method. Explain what compliance means.
 
-## Atala Prism
+### Atala Prism
 * There is hope for Prism Node will be open sourced eventually
 
 ## January 6, 2023 Working Group Meeting
