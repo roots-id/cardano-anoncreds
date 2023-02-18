@@ -13,7 +13,7 @@ TODO:
     - metadata label pagination
     - improve error handling
     - validate anoncreds object against models
-    - validate signature
+    - validate signature  <--- VERY IMPORTANT
     - low balance warning
     - implementy query for objetcs
 */

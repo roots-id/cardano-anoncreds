@@ -42,7 +42,7 @@ class Cardano:
 
         TODO:
         - validate anoncreds object against models
-        - validate signature
+        - validate signature <--- VERY IMPORTANT
         - low balance warning
         - implementy query for objetcs
         - metadata labels pagination

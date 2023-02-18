@@ -1,4 +1,4 @@
-from ..cardano import Cardano
+from cardano import Cardano
 from  pprint import pp
 
 cardano= Cardano()
