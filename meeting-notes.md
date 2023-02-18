@@ -3,8 +3,53 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## January 6, 2022 Working Group Meeting <--- NEXT MEETING
+## February 17, 2023 Working Group Meeting <--- NEXT MEETING
+Participants:
+* Lance Byrd (RootsID)
+* Alex Andrei (RootsID)
 
+### Verification Policies and Presentation Exchange
+* Alex and I talked about Verification Policies and https://identity.foundation/presentation-exchange/
+
+## February 3, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Alex Andrei (RootsID)
+
+### AnonCreds RS
+* It appears there is enough typescript support in AnonCreds-RS for us to do the smallest demo w/AnonCreds-Cardano driver.
+### AnonCreds v2
+* Mike Lodder wanted to know if there should be a new meeting to begin work towards a v2 that includes his updates.
+
+## January 20, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Ed Eykholt (BlockTrust)
+* Rodolfo Miranda (RootsID)
+* Alex Andrei (RootsID)
+
+### Cardano AnonCreds Method
+* What dependencies does the typescript implementation have? We haven't tested in browser but the blockfrost and emurgo serialization should work in the browser.
+* Animo is creating a Rust library so all crypto, etc which should be useful with WASM for browser, etc. https://github.com/hyperledger/anoncreds-rs
+* Swift and Java and React Native support are coming
+* What would an interopathon at IIW look like?
+
+### Next steps:
+* We will adapt to the reference impl once it solidifies.
+* A Cardano CIP for AnonCreds now that we are a registerd method https://hyperledger.github.io/anoncreds-methods-registry/#cardano-anoncreds-method. Explain what compliance means.
+
+### Atala Prism
+* There is hope for Prism Node will be open sourced eventually
+
+## January 6, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Rodolfo Miranda (RootsID)
+* Alex Andrei (RootsID)
+
+## Cardano AnonCreds Method
+* Rodolfo presented the first prototype driver for AnonCreds on Cardano!
+Recording https://drive.google.com/file/d/1JNKAK_-HPmgmfO6XL1NGkOYKdAmTf32k/view?usp=sharing
 
 ## December 9, 2022 Working Group Meeting
 Participants:
