@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@aries-framework/anoncreds": "^0.4.0-alpha.42",
+    "@aries-framework/anoncreds-rs": "0.4.0-alpha.42",
+    "@aries-framework/askar": "0.4.0-alpha.42",
+    "@aries-framework/core": "^0.4.0-alpha.42",
+    "@aries-framework/node": "^0.4.0-alpha.42",
+    "@hyperledger/anoncreds-nodejs": "^0.1.0-dev.8",
+    "@hyperledger/aries-askar-nodejs": "^0.1.0-dev.3"
+  }
+}

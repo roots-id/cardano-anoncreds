@@ -1,5 +1,6 @@
 export interface ISchema {
+    issuerId: string
     name: string
     version: string
-    attr_names: string[]
+    attrNames: string[]
 }

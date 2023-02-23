@@ -6,7 +6,7 @@ import Cardano from '../src/cardano/cardano'
     const cardano = new Cardano()
 
     console.log("Resolving SCHEMA")
-    console.log(JSON.stringify(await cardano.resolveObject("did:prism:123456789abcdefghi/resources/7b80558fdf6c3865c8928414679f3b5a8ad2849c753aafea32d3b099b3233568"), undefined, 2))
+    console.log(JSON.stringify(await cardano.resolveObject("did:prism:123456789abcdefghi/resources/76ff2d0cd3f8990da003727d5e89a2c4607505636fd1e8d1d048985880871d4c"), undefined, 2))
     console.log("\n")
 
     console.log("Resolving CRED_DEF")

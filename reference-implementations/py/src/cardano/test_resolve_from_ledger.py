@@ -4,7 +4,7 @@ from  pprint import pp
 cardano= Cardano()
 
 print("Resolving SCHEMA")
-pp(cardano.resolveObject("did:prism:123456789abcdefghi/resources/7b80558fdf6c3865c8928414679f3b5a8ad2849c753aafea32d3b099b3233568"))
+pp(cardano.resolveObject("did:prism:123456789abcdefghi/resources/76ff2d0cd3f8990da003727d5e89a2c4607505636fd1e8d1d048985880871d4c"))
 print("\n")
 
 print("Resolving CRED_DEF")

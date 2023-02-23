@@ -1,6 +1,7 @@
 from typing import List, TypedDict
 
 class Schema(TypedDict):
+    issuerId: str
     name: str
     version: str
-    attr_names: List[str]
+    attrNames: List[str]

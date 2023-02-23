@@ -4,6 +4,6 @@ import { IRevReg } from "./IRevReg"
 import { ISchema } from "./ISchema"
 
 export interface IMetadata {
-    ObjectMetadata: ISchema | ICredDef | IRevReg | IRevReg
+    ResourceObject: ISchema | ICredDef | IRevReg | IRevReg
     ResourceObjectMetadata: IObjectMetadata
 }

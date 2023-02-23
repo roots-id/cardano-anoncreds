@@ -78,20 +78,11 @@ export default class Cardano {
             this.privateKey  = cardanoWasm.PrivateKey.generate_ed25519()
             this.createEnterpriseAddress()
         }
-        
-        
-        
-
-        
-
-
-        
     }
 
 
-    public async registerSchema(schema: ISchema, publisher_DID: string, signature: string): Promise<string> {
-        if (await this.validateSignature(schema, publisher_DID, signature)){
-            const objectMetadata: IObjectMetadata = {
+    public async registerSchema(schema: ISchema, publisher_DID: string, signature: string): Promise<IObjectMetadata> {
+            let objectMetadata: IObjectMetadata = {
                 resourceURI: "",
                 resourceName: schema["name"],
                 resourceFamily: "anoncreds",
@@ -103,14 +94,13 @@ export default class Cardano {
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }
-            const txId = await this.publishAnoncredObject(schema,objectMetadata)
-            return publisher_DID + "/resources/" + txId
-        } else { return "Invalid Signature"}
+            const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(schema,objectMetadata)
+            objectMetadata.resourceURI = txId
+            return objectMetadata
     }
 
-    public async registerCredDef(credDef: ICredDef, publisher_DID: string, signature: string): Promise<string> {
-        if (await this.validateSignature(credDef, publisher_DID, signature)){
-            const objectMetadata: IObjectMetadata = {
+    public async registerCredDef(credDef: ICredDef, publisher_DID: string, signature: string): Promise<IObjectMetadata> {
+            let objectMetadata: IObjectMetadata = {
                 resourceURI: "",
                 resourceName: "CL",
                 resourceFamily: "anoncreds",
@@ -122,9 +112,9 @@ export default class Cardano {
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }
-            const txId = await this.publishAnoncredObject(credDef,objectMetadata)
-            return publisher_DID + "/resources/" + txId
-        } else { return "Invalid Signature"}
+            const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(credDef,objectMetadata)
+            objectMetadata.resourceURI = txId
+            return objectMetadata
     }
 
     public async registerRevReg(revReg: IRevReg, publisher_DID: string, signature: string): Promise<string> {

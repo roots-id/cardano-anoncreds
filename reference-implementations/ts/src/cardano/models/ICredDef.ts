@@ -23,11 +23,12 @@ export interface ICredDefRevocation {
 
 export interface ICredDefValue {
     primary: ICredDefPrimary
-    revocation: ICredDefRevocation
+    revocation?: ICredDefRevocation
 }
 
 export interface ICredDef {
-    schema_id: string
+    issuerId: string
+    schemaId: string
     type: string
     tag: string
     value: ICredDefValue

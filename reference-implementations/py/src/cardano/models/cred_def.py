@@ -25,7 +25,8 @@ class CredDefValue(TypedDict, total=False):
     revocation: CredDefRevocation
 
 class CredDef(TypedDict):
-    schema_id: str
+    issuerId: str
+    schemaId: str
     type: str
     tag: str
     value: CredDefValue

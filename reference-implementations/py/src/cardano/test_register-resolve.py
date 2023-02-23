@@ -10,9 +10,10 @@ cardano= Cardano()
 print("Registering SCHEMA")
 schema_id = cardano.registerSchema(
     {
+        "issuerId": "did:prism:123456789abcdefghi",
         "name": "Test Schema",
         "version": "1.0",
-        "attr_names": ["birthdate", "birthlocation", "citizenship", "expiry_date", "facephoto", "firstname", "link_secret", "name", "uuid"]
+        "attrNames": ["birthdate", "birthlocation", "citizenship", "expiry_date", "facephoto", "firstname", "link_secret", "name", "uuid"]
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -23,7 +24,8 @@ print("\n")
 print("Registering CRED_DEF")
 cred_def_id = cardano.registerCredDef(
     {
-        "schema_id": schema_id,
+        "issuerId": "did:prism:123456789abcdefghi",
+        "schemaId": schema_id,
         "type": "CL",
         "tag": "latest",
         "value": {

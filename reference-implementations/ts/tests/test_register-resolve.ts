@@ -5,21 +5,23 @@ import Cardano from '../src/cardano/cardano'
     const cardano = new Cardano()
 
     console.log("Registering SCHEMA")
-    const schemaId = await cardano.registerSchema(
+    const schemaMeta = await cardano.registerSchema(
         {
+            issuerId: "did:prism:123456789abcdefghi",
             name: "Test Schema",
             version: "1.0",
-            attr_names: ["birthdate", "birthlocation", "citizenship", "expiry_date", "facephoto", "firstname", "link_secret", "name", "uuid"]
+            attrNames: ["birthdate", "birthlocation", "citizenship", "expiry_date", "facephoto", "firstname", "link_secret", "name", "uuid"]
         },
         "did:prism:123456789abcdefghi",
         "ABCDSIGABC"
     )
-    console.log("SCHEMA ID: " + schemaId + "\n")
+    console.log("SCHEMA ID: " + schemaMeta.resourceURI + "\n")
 
     console.log("Registering CRED_DEF")
-    const credDefId = await cardano.registerCredDef(
+    const credDefMeta = await cardano.registerCredDef(
         {
-            schema_id: schemaId,
+            issuerId: "did:prism:123456789abcdefghi",
+            schemaId: schemaMeta.resourceURI,
             type: "CL",
             tag: "latest",
             value: {
@@ -58,13 +60,13 @@ import Cardano from '../src/cardano/cardano'
         "did:prism:123456789abcdefghi",
         "ABCDSIGABC"
     )
-    console.log("CRED_DEF ID: " + credDefId + "\n")
+    console.log("CRED_DEF ID: " + credDefMeta.resourceURI + "\n")
 
     console.log("Registering REV_REG")
     const revRegId = await cardano.registerRevReg(
         {
             type: "CL_ACCUM",
-            credDefId: credDefId!,
+            credDefId: credDefMeta.resourceURI!,
             tag: "MyCustomCredentialDefinition",
             publicKeys: {
                 accumKey: {
@@ -135,11 +137,11 @@ import Cardano from '../src/cardano/cardano'
     await new Promise(r => setTimeout(r, 60000))
 
     console.log("Resolving SCHEMA")
-    console.log(JSON.stringify(await cardano.resolveObject(schemaId), undefined, 2))
+    console.log(JSON.stringify(await cardano.resolveObject(schemaMeta.resourceURI), undefined, 2))
     console.log("\n")
 
     console.log("Resolving CRED_DEF")
-    console.log(JSON.stringify(await cardano.resolveObject(credDefId), undefined, 2))
+    console.log(JSON.stringify(await cardano.resolveObject(credDefMeta.resourceURI), undefined, 2))
     console.log("\n")
 
     console.log("Resolving REV_REG")

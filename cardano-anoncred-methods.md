@@ -53,16 +53,18 @@ Resource Objects based on its type:
 ### Schema `SCHEMA`
 ```
 {
+  "issuerId": "https://example.org/issuers/74acabe2-0edc-415e-ad3d-c259bac04c15",
   "name": "Example schema",
   "version": "0.0.1",
-  "attr_names": ["name", "age", "vmax"]
+  "attrNames": ["name", "age", "vmax"]
 }
 ```
 
 ### Credential definition `PUBLIC_CRED_DEF`
 ```
 {
-  "schema_id": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
+  "issuerId": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ",
+  "schemaId": "did:indy:sovrin:SGrjRL82Y9ZZbzhUDXokvQ/anoncreds/v0/SCHEMA/MemberPass/1.0",
   "type": "CL",
   "tag": "latest",
   "value": {
