@@ -1,4 +1,4 @@
-import { Agent } from '@aries-framework/core'
+import {Key, Agent, DidsModule, KeyDidRegistrar, KeyDidResolver, KeyType, TypedArrayEncoder } from '@aries-framework/core'
 import { agentDependencies } from '@aries-framework/node'
 import { AnonCredsRsModule } from '@aries-framework/anoncreds-rs'
 import { AskarModule } from '@aries-framework/askar'
@@ -36,8 +36,15 @@ import { CardanoAnonCredsRegistry } from './CardanoAnonCredsRegistry'
         })
         const linkSecretIds = await agent.modules.anoncreds.getLinkSecretIds()
 
-        // Fake DID - TODO: Replace with real DID
-        const issuerId = "did:example:1234"
+        // Create DID Key for issuer (it can be from any DID method)
+        const didResult = await agent.dids.create({
+            method: 'key',
+            options: {
+              keyType: KeyType.Ed25519,
+            }
+          })
+        const issuerId = didResult.didState.did!
+        console.log('Issuer DID: ' + issuerId)
 
         // Create Schema
         const schemaResult = await agent.modules.anoncreds.registerSchema({
