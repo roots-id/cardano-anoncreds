@@ -1,10 +1,5 @@
 /* 
-Environment variables required:
-    - BLOCKFROST_API_KEY = API KEY from Blockfrots  https://blockfrost.io
-    - CARDANO_ADDRESS_CBORHEX = Private Key of address as CBOR Hex. Must be an Enterprice address (no Staking part) as PaymentSigningKeyShelley_ed25519
-    - WARNING!!! Storing private keys in environment variables is not secure at all!!!. This is only for testing purposes.
-
-    - Support queued operations. No Tx_hash can be retrieved syncronously.
+    - Support queued operations.
     - To guarantee synchronous operation, enouth UTXOs must be available in the address to process simultaneous operations.
     - If not, the operation will be queued and processed when UTXOs are available. Need to define how to retrieve tx_hash in this case.
     - spreadUTxOs() will spread UTXOs in the address to avoid this situation.
@@ -29,9 +24,7 @@ import { ICredDef } from './models/ICredDef'
 import { IRevReg } from './models/IRevReg'
 import { IRevRegEntry } from './models/IRevRegEntry'
 import { IMetadata } from './models/IMetadata'
-import { mnemonicToEntropy } from 'bip39';
 
-const NETWORK = "preview"
 const MINIMUN_BALANCE = 5000000
 const TRANSACTION_AMOUNT = 1000000
 const MINIMUM_UTXO = 20
@@ -50,8 +43,11 @@ export default class Cardano {
     private privateKey: cardanoWasm.PrivateKey
 
 
-    constructor() {
-        const blockfrostProjectId = process.env.BLOCKFROST_API_KEY
+    constructor(
+        blockfrostProjectId = '',
+        cardanoNerwork = 'preview',
+        cardanoAddressCborHex: string | undefined = undefined
+        ) {
         this.ledgerCache = new Map()
         this.availableUTXOs = []
         this.timer = null
@@ -60,18 +56,18 @@ export default class Cardano {
         this.blockfrostAPI = new BlockFrostAPI(
             {
                 projectId: blockfrostProjectId,
-                network: NETWORK
+                network: cardanoNerwork
             } as Options
         )
         process.on('SIGINT', () => {
-            // Shutdown if queue of pending transaction is empty, otherwise wait to flush queue
+            // Shutdown if queue of pending transaction is empty, otherwise wait QUEUE_DURATION to flush queue
             if (this.pendingTx.length === 0) {
                 process.exit(1)
             }
         })
 
-        if (process.env.CARDANO_ADDRESS_CBORHEX) {
-            const cardanoPrivateAddress = process.env.CARDANO_ADDRESS_CBORHEX
+        if (cardanoAddressCborHex !== undefined) {
+            const cardanoPrivateAddress = cardanoAddressCborHex
             this.privateKey = cardanoWasm.PrivateKey.from_normal_bytes(new Uint8Array(cbor.decode(cardanoPrivateAddress!)))
             this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
                 cardanoWasm.NetworkInfo.testnet().network_id(),

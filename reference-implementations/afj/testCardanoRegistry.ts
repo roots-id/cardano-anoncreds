@@ -1,4 +1,11 @@
-import {Key, Agent, DidsModule, KeyDidRegistrar, KeyDidResolver, KeyType, TypedArrayEncoder } from '@aries-framework/core'
+/*
+Environment variables required:
+ - BLOCKFROST_API_KEY = API KEY from Blockfrots  https://blockfrost.io
+ - CARDANO_ADDRESS_CBORHEX = Private Key of address as CBOR Hex. Must be an Enterprice address (no Staking part) as PaymentSigningKeyShelley_ed25519
+ - WARNING!!! Storing private keys in environment variables is not secure at all!!!. This is only for testing purposes.
+*/
+
+import { Agent, KeyType } from '@aries-framework/core'
 import { agentDependencies } from '@aries-framework/node'
 import { AnonCredsRsModule } from '@aries-framework/anoncreds-rs'
 import { AskarModule } from '@aries-framework/askar'
@@ -19,7 +26,11 @@ import { CardanoAnonCredsRegistry } from './CardanoAnonCredsRegistry'
         modules: {
             askar: new AskarModule(),
             anoncreds: new AnonCredsModule({
-                registries: [new CardanoAnonCredsRegistry()],
+                registries: [new CardanoAnonCredsRegistry({
+                    blockfrostProjectId: process.env.BLOCKFROST_API_KEY!,
+                    cardanoNerwork: 'preview',
+                    cardanoAddressCborHex: process.env.CARDANO_ADDRESS_CBORHEX!}
+                )],
             }),
             anoncredsRs: new AnonCredsRsModule(),
         },

@@ -1,9 +1,18 @@
+// - BLOCKFROST_API_KEY = API KEY from Blockfrots  https://blockfrost.io
+// - CARDANO_ADDRESS_CBORHEX = Private Key of address as CBOR Hex. Must be an Enterprice address (no Staking part) as PaymentSigningKeyShelley_ed25519
+// - WARNING!!! Storing private keys in environment variables is not secure at all!!!. This is only for testing purposes.
+
+
 import Cardano from '../src/cardano/cardano'
 
-
 (async () => {
+    
+    const cardano = new Cardano(
+        process.env.BLOCKFROST_API_KEY!,
+        'preview',
+        process.env.CARDANO_ADDRESS_CBORHEX!
 
-    const cardano = new Cardano()
+    )
 
     console.log("Resolving SCHEMA")
     console.log(JSON.stringify(await cardano.resolveObject("did:prism:123456789abcdefghi/resources/76ff2d0cd3f8990da003727d5e89a2c4607505636fd1e8d1d048985880871d4c"), undefined, 2))

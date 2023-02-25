@@ -29,28 +29,28 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
   // Cardano AnonCreds Method support any qualified DID 
   public readonly supportedIdentifier = /did:*:[a-zA-Z0-9]/
 
-  private schemas: Record<string, AnonCredsSchema>
-  private credentialDefinitions: Record<string, AnonCredsCredentialDefinition>
-  private revocationRegistryDefinitions: Record<string, AnonCredsRevocationRegistryDefinition>
-  private revocationStatusLists: Record<string, Record<string, AnonCredsRevocationStatusList>>
+  private blockfrostProjectId: string
+  private cardanoNerwork: string
+  private cardanoAddressCborHex: string
   private cardano: Cardano
 
   public constructor({
-    existingSchemas = {},
-    existingCredentialDefinitions = {},
-    existingRevocationRegistryDefinitions = {},
-    existingRevocationStatusLists = {},
+    blockfrostProjectId = '',
+    cardanoNerwork = 'preview',
+    cardanoAddressCborHex = '',
   }: {
-    existingSchemas?: Record<string, AnonCredsSchema>
-    existingCredentialDefinitions?: Record<string, AnonCredsCredentialDefinition>
-    existingRevocationRegistryDefinitions?: Record<string, AnonCredsRevocationRegistryDefinition>
-    existingRevocationStatusLists?: Record<string, Record<string, AnonCredsRevocationStatusList>>
+    blockfrostProjectId?: string
+    cardanoNerwork?: string
+    cardanoAddressCborHex?: string
   } = {}) {
-    this.schemas = existingSchemas
-    this.credentialDefinitions = existingCredentialDefinitions
-    this.revocationRegistryDefinitions = existingRevocationRegistryDefinitions
-    this.revocationStatusLists = existingRevocationStatusLists
-    this.cardano = new Cardano()
+    this.blockfrostProjectId = blockfrostProjectId
+    this.cardanoNerwork = cardanoNerwork
+    this.cardanoAddressCborHex = cardanoAddressCborHex
+    this.cardano = new Cardano(
+      blockfrostProjectId,
+      cardanoNerwork,
+      cardanoAddressCborHex
+    )
   }
 
   public async getSchema(agentContext: AgentContext, schemaId: string): Promise<GetSchemaReturn> {
