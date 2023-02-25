@@ -13,6 +13,7 @@ import { AnonCredsCredentialDefinitionRepository, AnonCredsModule, AnonCredsSche
 
 import { CardanoAnonCredsRegistry } from './CardanoAnonCredsRegistry'
 
+
 (async () => {
 
     const agent = new Agent({

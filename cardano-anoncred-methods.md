@@ -42,7 +42,7 @@ Where:
 - `resourceVersion`: the version of the resource
 - `mediaType`: "application/json"
 - `created`: date in the format 2020-12-20T19:17:47Z
-- `checksum`: the MD5 digest of the `ResourceObject`
+- `checksum`: the SHA256 digest of the `ResourceObject`
 - `publisherId`: the DID of the publisher
 - `publisherSignature`: the signature of the `ResourceObject` using the keys in the DID of the publisher. That signature is enforcing that the Object belongs to the declared publisher DID 
 
@@ -136,13 +136,13 @@ Resource Objects based on its type:
 
 ## Consideration for publishing AnonCred objects in Cardano Blockchain as Transaction Metadata
 - The `resourceURI` can not be stored in the transaction metadata and must be reconstructed after the transaction is submitted to the blockchain
-- Currenctly, metadata field values can not be longer that 64 characters. If a field exceed that length, it shoud be stored as an array of strings and recosntructed back as one string after retrieval.
-- In order to locate all `REV_REG_ENTRY`, we need to scan all blocks produced after creation of `REV_REG`. In order to facilitate the search, a random uint32 should be generated and used as metadata key for the `REV_REG` and all subsequent `REV_REG_ENTRY`. Blockchain databases are ussually indexed by the metadata key and queries can be speed up if are filtered by that field.
+- Currenctly, metadata field values can not be longer that 64 characters. If a field exceed that length, it shoud be stored as an array of strings of lenght lesss than 64 characters and recosntructed back as one string after retrieval.
+- In order to locate all `REV_REG_ENTRY`, we need to scan all blocks produced after creation of `REV_REG`. To facilitate the search, a random uint32 should be generated and used as metadata key for the `REV_REG` and all subsequent `REV_REG_ENTRY`. Blockchain databases are ussually indexed by the metadata key and queries can be speed up if are filtered by that field.
 
 ## Retrieving AnonCred objects
-Cardano Anoncred Objects can be retrieved from the blockchain by searching for a transaction that matchs the transaction hash defined in `objectId`. It's encouraged that a validatios takes place to:
-- verify the checksum of the `ResourceObject`
-- verify the `publisherSignature` against the keys of the publisher DID
+Cardano Anoncred Objects can be retrieved from the blockchain by searching for a transaction that matchs the transaction hash defined in `objectId`. It's encouraged that a validatinos takes place to:
+- verify the checksum of the `ResourceObject`. The checksum is a SHA256 hash of the JSON Resource Object stringified
+- verify the `publisherSignature` against the keys of the publisher DID. The signature is a base64 encoded signature of the SHA256 hash of the JSON Resource Object stringified. The signature should be performed with the Verification Method Keys of the publisher DID.
 
 ## Generate and store `TAIL_FILE`
 It is recommended that implementors deploy an [Indy Tails Server](https://github.com/bcgov/indy-tails-server) to receive, store and serve Tails files.

@@ -91,7 +91,7 @@ class Cardano:
                 "resourceVersion": "v1",
                 "mediaType": "application/json",
                 "created": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-                "checkSum": hashlib.md5(json.dumps(schema).encode('utf-8')).hexdigest(),
+                "checkSum": hashlib.sha256(json.dumps(schema).encode('utf-8')).hexdigest(),
                 "publisherId": publisher_DID,
                 "publisherSignature": signature
             }
@@ -110,7 +110,7 @@ class Cardano:
                 "resourceVersion": "v1",
                 "mediaType": "application/json",
                 "created": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-                "checkSum": hashlib.md5(json.dumps(cred_def).encode('utf-8')).hexdigest(),
+                "checkSum": hashlib.sha256(json.dumps(cred_def).encode('utf-8')).hexdigest(),
                 "publisherId": publisher_DID,
                 "publisherSignature": signature
             }
@@ -129,7 +129,7 @@ class Cardano:
                 "resourceVersion": "v1",
                 "mediaType": "application/json",
                 "created": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-                "checkSum": hashlib.md5(json.dumps(rev_reg).encode('utf-8')).hexdigest(),
+                "checkSum": hashlib.sha256(json.dumps(rev_reg).encode('utf-8')).hexdigest(),
                 "publisherId": publisher_DID,
                 "publisherSignature": signature
             }
@@ -148,7 +148,7 @@ class Cardano:
                 "resourceVersion": "v1",
                 "mediaType": "application/json",
                 "created": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-                "checkSum": hashlib.md5(json.dumps(rev_reg_entry).encode('utf-8')).hexdigest(),
+                "checkSum": hashlib.sha256(json.dumps(rev_reg_entry).encode('utf-8')).hexdigest(),
                 "publisherId": publisher_DID,
                 "publisherSignature": signature
             }

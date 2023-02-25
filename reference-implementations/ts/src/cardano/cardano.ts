@@ -17,7 +17,7 @@ import { Options } from '@blockfrost/blockfrost-js/lib/types'
 import * as cardanoWasm from '@emurgo/cardano-serialization-lib-nodejs'
 import { randomBytes } from 'crypto'
 import cbor from 'cbor'
-import { MD5 } from 'crypto-js'
+import { SHA256 } from 'crypto-js'
 import { ISchema } from './models/ISchema'
 import { IObjectMetadata } from './models/IObjectMetadata'
 import { ICredDef } from './models/ICredDef'
@@ -89,7 +89,7 @@ export default class Cardano {
             resourceVersion: "v1",
             mediaType: "application/json",
             created: (new Date()).toISOString(),
-            checkSum: MD5(JSON.stringify(schema)).toString(),
+            checkSum: SHA256(JSON.stringify(schema)).toString(),
             publisherId: publisher_DID,
             publisherSignature: signature
         }
@@ -107,7 +107,7 @@ export default class Cardano {
             resourceVersion: "v1",
             mediaType: "application/json",
             created: (new Date()).toISOString(),
-            checkSum: MD5(JSON.stringify(credDef)).toString(),
+            checkSum: (JSON.stringify(credDef)).toString(),
             publisherId: publisher_DID,
             publisherSignature: signature
         }
@@ -126,7 +126,7 @@ export default class Cardano {
                 resourceVersion: "v1",
                 mediaType: "application/json",
                 created: (new Date()).toISOString(),
-                checkSum: MD5(JSON.stringify(revReg)).toString(),
+                checkSum: SHA256(JSON.stringify(revReg)).toString(),
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }
@@ -145,7 +145,7 @@ export default class Cardano {
                 resourceVersion: "v1",
                 mediaType: "application/json",
                 created: (new Date()).toISOString(),
-                checkSum: MD5(JSON.stringify(revRegEntry)).toString(),
+                checkSum: SHA256(JSON.stringify(revRegEntry)).toString(),
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }

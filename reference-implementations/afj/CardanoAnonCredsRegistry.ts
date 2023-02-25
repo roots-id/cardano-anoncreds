@@ -20,7 +20,7 @@ import Cardano from '../ts/src/cardano/Cardano'
 import { ISchema } from '../ts/src/cardano/models/ISchema'
 import { ICredDef, ICredDefPrimary, ICredDefRevocation } from '../ts/src/cardano/models/ICredDef'
 import {IRevReg} from '../ts/src/cardano/models/IRevReg'
-import {MD5} from 'crypto-js'
+import {SHA256} from 'crypto-js'
 
 /**
  * Cardano Method implementation of the {@link AnonCredsRegistry} interface.
@@ -52,6 +52,9 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       cardanoAddressCborHex
     )
   }
+  public getData(){
+    return true
+  }
 
   public async getSchema(agentContext: AgentContext, schemaId: string): Promise<GetSchemaReturn> {
     try {
@@ -65,7 +68,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         agentContext,
         publisherId,
         publisherSignature!,
-        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+        SHA256(JSON.stringify(cardanoObject.ResourceObject)).toString()
       )
 
       if (siganatureValidation) {
@@ -103,7 +106,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     options: RegisterSchemaOptions
   ): Promise<RegisterSchemaReturn> {
     try {
-      const message = MD5(JSON.stringify(options.schema)).toString()
+      const message = SHA256(JSON.stringify(options.schema)).toString()
       const signature = await this.signAnoncredObject(
         agentContext,
         options.schema.issuerId,
@@ -167,7 +170,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         agentContext,
         publisherId,
         publisherSignature!,
-        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+        SHA256(JSON.stringify(cardanoObject.ResourceObject)).toString()
       )
       if (siganatureValidation) {
         const credDef = cardanoObject.ResourceObject as ICredDef
@@ -265,7 +268,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         }
       }
 
-      const message = MD5(JSON.stringify(credDef)).toString()
+      const message = SHA256(JSON.stringify(credDef)).toString()
       const signature = await this.signAnoncredObject(
         agentContext,
         options.credentialDefinition.issuerId,
@@ -327,7 +330,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         agentContext,
         publisherId,
         publisherSignature!,
-        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+        SHA256(JSON.stringify(cardanoObject.ResourceObject)).toString()
       )
       if (siganatureValidation) {
         const revReg = cardanoObject.ResourceObject as IRevReg
@@ -392,7 +395,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         agentContext,
         publisherId,
         publisherSignature!,
-        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+        SHA256(JSON.stringify(cardanoObject.ResourceObject)).toString()
       )
       if (siganatureValidation) {
         const revReg = cardanoObject.ResourceObject as IRevReg
