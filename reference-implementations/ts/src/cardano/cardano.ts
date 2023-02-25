@@ -13,7 +13,6 @@ TODO:
     - metadata label pagination
     - improve error handling
     - validate anoncreds object against models
-    - validate signature  <--- VERY IMPORTANT
     - low balance warning
     - implementy query for objetcs
 */
@@ -21,9 +20,9 @@ TODO:
 import { BlockFrostAPI } from '@blockfrost/blockfrost-js'
 import { Options } from '@blockfrost/blockfrost-js/lib/types'
 import * as cardanoWasm from '@emurgo/cardano-serialization-lib-nodejs'
-import {randomBytes } from 'crypto'
+import { randomBytes } from 'crypto'
 import cbor from 'cbor'
-import {MD5} from 'crypto-js'
+import { MD5 } from 'crypto-js'
 import { ISchema } from './models/ISchema'
 import { IObjectMetadata } from './models/IObjectMetadata'
 import { ICredDef } from './models/ICredDef'
@@ -49,10 +48,9 @@ export default class Cardano {
     private timer: NodeJS.Timeout | null
     private pendingTx: any[]
     private privateKey: cardanoWasm.PrivateKey
-    
-  
-    constructor () 
-    {
+
+
+    constructor() {
         const blockfrostProjectId = process.env.BLOCKFROST_API_KEY
         this.ledgerCache = new Map()
         this.availableUTXOs = []
@@ -60,65 +58,70 @@ export default class Cardano {
         this.pendingTx = []
         this.paymentAddress = ""
         this.blockfrostAPI = new BlockFrostAPI(
-            { 
+            {
                 projectId: blockfrostProjectId,
                 network: NETWORK
             } as Options
         )
+        process.on('SIGINT', () => {
+            // Shutdown if queue of pending transaction is empty, otherwise wait to flush queue
+            if (this.pendingTx.length === 0) {
+                process.exit(1)
+            }
+        })
 
-        if (process.env.CARDANO_ADDRESS_CBORHEX){
+        if (process.env.CARDANO_ADDRESS_CBORHEX) {
             const cardanoPrivateAddress = process.env.CARDANO_ADDRESS_CBORHEX
             this.privateKey = cardanoWasm.PrivateKey.from_normal_bytes(new Uint8Array(cbor.decode(cardanoPrivateAddress!)))
             this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
                 cardanoWasm.NetworkInfo.testnet().network_id(),
                 cardanoWasm.StakeCredential.from_keyhash(this.privateKey.to_public().hash())
-              ).to_address().to_bech32()
+            ).to_address().to_bech32()
             this.getUTXOs()
         } else {
-            this.privateKey  = cardanoWasm.PrivateKey.generate_ed25519()
+            this.privateKey = cardanoWasm.PrivateKey.generate_ed25519()
             this.createEnterpriseAddress()
         }
     }
 
-
     public async registerSchema(schema: ISchema, publisher_DID: string, signature: string): Promise<IObjectMetadata> {
-            let objectMetadata: IObjectMetadata = {
-                resourceURI: "",
-                resourceName: schema["name"],
-                resourceFamily: "anoncreds",
-                resourceType: "SCHEMA",
-                resourceVersion: "v1",
-                mediaType: "application/json",
-                created: (new Date()).toISOString(),
-                checkSum: MD5(JSON.stringify(schema)).toString(),
-                publisherId: publisher_DID,
-                publisherSignature: signature
-            }
-            const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(schema,objectMetadata)
-            objectMetadata.resourceURI = txId
-            return objectMetadata
+        let objectMetadata: IObjectMetadata = {
+            resourceURI: "",
+            resourceName: schema["name"],
+            resourceFamily: "anoncreds",
+            resourceType: "SCHEMA",
+            resourceVersion: "v1",
+            mediaType: "application/json",
+            created: (new Date()).toISOString(),
+            checkSum: MD5(JSON.stringify(schema)).toString(),
+            publisherId: publisher_DID,
+            publisherSignature: signature
+        }
+        const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(schema, objectMetadata)
+        objectMetadata.resourceURI = txId
+        return objectMetadata
     }
 
     public async registerCredDef(credDef: ICredDef, publisher_DID: string, signature: string): Promise<IObjectMetadata> {
-            let objectMetadata: IObjectMetadata = {
-                resourceURI: "",
-                resourceName: "CL",
-                resourceFamily: "anoncreds",
-                resourceType: "CRED_DEF",
-                resourceVersion: "v1",
-                mediaType: "application/json",
-                created: (new Date()).toISOString(),
-                checkSum: MD5(JSON.stringify(credDef)).toString(),
-                publisherId: publisher_DID,
-                publisherSignature: signature
-            }
-            const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(credDef,objectMetadata)
-            objectMetadata.resourceURI = txId
-            return objectMetadata
+        let objectMetadata: IObjectMetadata = {
+            resourceURI: "",
+            resourceName: "CL",
+            resourceFamily: "anoncreds",
+            resourceType: "CRED_DEF",
+            resourceVersion: "v1",
+            mediaType: "application/json",
+            created: (new Date()).toISOString(),
+            checkSum: MD5(JSON.stringify(credDef)).toString(),
+            publisherId: publisher_DID,
+            publisherSignature: signature
+        }
+        const txId = publisher_DID + "/resources/" + await this.publishAnoncredObject(credDef, objectMetadata)
+        objectMetadata.resourceURI = txId
+        return objectMetadata
     }
 
     public async registerRevReg(revReg: IRevReg, publisher_DID: string, signature: string): Promise<string> {
-        if (await this.validateSignature(revReg, publisher_DID, signature)){
+        if (await this.validateSignature(revReg, publisher_DID, signature)) {
             const objectMetadata: IObjectMetadata = {
                 resourceURI: "",
                 resourceName: "CL_ACUMM",
@@ -131,13 +134,13 @@ export default class Cardano {
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }
-            const txId = await this.publishAnoncredObject(revReg,objectMetadata)
+            const txId = await this.publishAnoncredObject(revReg, objectMetadata)
             return publisher_DID + "/resources/" + txId
-        } else { return "Invalid Signature"}
+        } else { return "Invalid Signature" }
     }
 
     public async registerRevRegEntry(revRegEntry: IRevRegEntry, publisher_DID: string, signature: string): Promise<string> {
-        if (await this.validateSignature(revRegEntry, publisher_DID, signature)){
+        if (await this.validateSignature(revRegEntry, publisher_DID, signature)) {
             const objectMetadata: IObjectMetadata = {
                 resourceURI: "",
                 resourceName: "CL_ACUMM",
@@ -155,9 +158,9 @@ export default class Cardano {
             const meta = await this.getObject(objectId)
             const prefix = parseInt(meta[0]['label'])
 
-            const txId = await this.publishAnoncredObject(revRegEntry,objectMetadata, prefix)
+            const txId = await this.publishAnoncredObject(revRegEntry, objectMetadata, prefix)
             return publisher_DID + "/resources/" + txId
-        } else { return "Invalid Signature"}
+        } else { return "Invalid Signature" }
     }
 
     public async resolveObject(resourceURI: string): Promise<IMetadata> {
@@ -173,12 +176,10 @@ export default class Cardano {
             metaJson["RevRegEntries"] = entries
         }
 
-        
         return metaJson
     }
 
-
-    async publishAnoncredObject(anoncredObject: ISchema | ICredDef | IRevReg | IRevRegEntry,anoncredObjectMetadata: IObjectMetadata, metadataPrefix?: number): Promise<string>{
+    async publishAnoncredObject(anoncredObject: ISchema | ICredDef | IRevReg | IRevRegEntry, anoncredObjectMetadata: IObjectMetadata, metadataPrefix?: number): Promise<string> {
         if (!metadataPrefix) {
             metadataPrefix = randomBytes(4).readUInt32BE(0)
         }
@@ -240,28 +241,28 @@ export default class Cardano {
             for (const utxo of this.availableUTXOs) {
                 utxoSum = utxoSum + parseInt(utxo.amount[0].quantity)
                 txBuilder.add_input(
-                cardanoWasm.Address.from_bech32(this.paymentAddress),
-                cardanoWasm.TransactionInput.new(
-                    cardanoWasm.TransactionHash.from_bytes(
-                    Buffer.from(utxo.tx_hash, 'hex')),
-                    utxo.tx_index
-                ),
-                cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(utxo.amount[0].quantity))
+                    cardanoWasm.Address.from_bech32(this.paymentAddress),
+                    cardanoWasm.TransactionInput.new(
+                        cardanoWasm.TransactionHash.from_bytes(
+                            Buffer.from(utxo.tx_hash, 'hex')),
+                        utxo.tx_index
+                    ),
+                    cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(utxo.amount[0].quantity))
                 );
                 utxoToRemove.push(utxo)
-                if (utxoSum > (TRANSACTION_AMOUNT + 2000000)){ break}
+                if (utxoSum > (TRANSACTION_AMOUNT + 2000000)) { break }
             }
-            
+
             txBuilder.add_output(
                 cardanoWasm.TransactionOutput.new(
                     cardanoWasm.Address.from_bech32(this.paymentAddress),
-                cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(TRANSACTION_AMOUNT.toString()))    
+                    cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(TRANSACTION_AMOUNT.toString()))
                 ),
             );
-            
+
 
             const auxData = cardanoWasm.AuxiliaryData.new()
-            const metadata = cardanoWasm.encode_json_str_to_metadatum(JSON.stringify(meta[Object.keys(meta)[0]]),cardanoWasm.MetadataJsonSchema.NoConversions)
+            const metadata = cardanoWasm.encode_json_str_to_metadatum(JSON.stringify(meta[Object.keys(meta)[0]]), cardanoWasm.MetadataJsonSchema.NoConversions)
             const transactionMetadata = cardanoWasm.GeneralTransactionMetadata.new()
             transactionMetadata.insert(cardanoWasm.BigNum.from_str(Object.keys(meta)[0].toString()), metadata)
             auxData.set_metadata(transactionMetadata)
@@ -312,10 +313,10 @@ export default class Cardano {
             await this.submitTransaction(m)
         })
         this.timer = null
-            
+
     }
 
-    async getObject(txID: string): Promise<any>{
+    async getObject(txID: string): Promise<any> {
         if (this.ledgerCache.has(txID)) {
             return this.ledgerCache.get(txID)
         } else {
@@ -323,38 +324,36 @@ export default class Cardano {
         }
     }
 
-    async getRevocationEntries(metaKey: string, revRegId: string, publisherDID: string): Promise<IRevRegEntry[]>{
+    async getRevocationEntries(metaKey: string, revRegId: string, publisherDID: string): Promise<IRevRegEntry[]> {
         const metas = await this.blockfrostAPI.metadataTxsLabel(metaKey)
         let accumulators: IRevRegEntry[] = []
         metas.forEach(m => {
             let meta = ""
 
-            Object.entries(m.json_metadata!).forEach(([k,v]) => {
+            Object.entries(m.json_metadata!).forEach(([k, v]) => {
                 meta += v
             })
             let metaJson = JSON.parse(meta)
-              
+
             if (
-                metaJson.ResourceObjectMetadata.resourceType === "REV_REG_ENTRY" && 
+                metaJson.ResourceObjectMetadata.resourceType === "REV_REG_ENTRY" &&
                 metaJson.ResourceObject.revocRegDefId === revRegId &&
                 metaJson.ResourceObjectMetadata.publisherId === publisherDID
             ) {
-                    // TODO VERIFY SIGNATURE
-                    accumulators.push(metaJson.ResourceObject)
+                accumulators.push(metaJson.ResourceObject)
             }
         })
         return accumulators
     }
-        
 
-    async getAddressbalance (): Promise<number> {
+    async getAddressbalance(): Promise<number> {
         try {
             const address = await this.blockfrostAPI.addresses(this.paymentAddress)
             return +address.amount[0].quantity
         } catch (error) {
             return 0
         }
-      }
+    }
 
     async getUTXOs(): Promise<void> {
         try {
@@ -365,36 +364,33 @@ export default class Cardano {
     }
 
     async validateSignature(object: ISchema | ICredDef | IRevReg | IRevRegEntry, publisherDID: string, signature: string): Promise<boolean> {
-        // # TODO
-        // # resolve DID
-        // # get public key from DID Doc
-        // # verify signature
+        // signature validation is implemented in framework module
         return true
     }
 
-    private toHexString (byteArray: Uint8Array) {
+    private toHexString(byteArray: Uint8Array) {
         return Array.from(byteArray, (byte) => {
-          return (`0${(byte & 0xFF).toString(16)}`).slice(-2);
+            return (`0${(byte & 0xFF).toString(16)}`).slice(-2);
         }).join('');
-      }
+    }
 
     async createEnterpriseAddress(): Promise<void> {
 
-        this.privateKey  = cardanoWasm.PrivateKey.generate_ed25519()
+        this.privateKey = cardanoWasm.PrivateKey.generate_ed25519()
         this.paymentAddress = cardanoWasm.EnterpriseAddress.new(
             cardanoWasm.NetworkInfo.testnet().network_id(),
             cardanoWasm.StakeCredential.from_keyhash(this.privateKey.to_public().hash())
-          ).to_address().to_bech32()
+        ).to_address().to_bech32()
         const cborhex = cbor.encode(this.privateKey.as_bytes().buffer).toString('hex')
         console.log("Enterprise address: " + this.paymentAddress)
         console.log("Private Key CBORHex: " + cborhex)
-        let balance = 0 
+        let balance = 0
         while (await this.getAddressbalance() < MINIMUN_BALANCE) {
             balance = await this.getAddressbalance()
             console.log("Waiting for funds...")
             await new Promise(r => setTimeout(r, 30000))
         }
-        console.log("Funds received: " + balance/1000, "ADA")
+        console.log("Funds received: " + balance / 1000, "ADA")
         await this.getUTXOs()
         console.log("Qty of UTXOs: " + this.availableUTXOs.length)
         await this.spreadUTxOs()
@@ -403,12 +399,12 @@ export default class Cardano {
         await this.getUTXOs()
         console.log("Qty of UTXOs: ", this.availableUTXOs.length)
 
-    }    
+    }
 
     async spreadUTxOs(): Promise<void> {
         await this.getUTXOs()
         let balance = await this.getAddressbalance()
-        if (balance > MINIMUN_BALANCE && this.availableUTXOs.length < MINIMUM_UTXO){
+        if (balance > MINIMUN_BALANCE && this.availableUTXOs.length < MINIMUM_UTXO) {
             console.log("Spreading UTXOs")
             const tx_amount = Math.floor((balance - 10000000) / MINIMUM_UTXO)
             const latestEpoch = await this.blockfrostAPI.epochsLatest()
@@ -430,20 +426,20 @@ export default class Cardano {
             const txBuilder = cardanoWasm.TransactionBuilder.new(txBuilderCfg)
             for (const utxo of this.availableUTXOs) {
                 txBuilder.add_input(
-                cardanoWasm.Address.from_bech32(this.paymentAddress),
-                cardanoWasm.TransactionInput.new(
-                    cardanoWasm.TransactionHash.from_bytes(
-                    Buffer.from(utxo.tx_hash, 'hex')),
-                    utxo.tx_index
-                ),
-                cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(utxo.amount[0].quantity))
+                    cardanoWasm.Address.from_bech32(this.paymentAddress),
+                    cardanoWasm.TransactionInput.new(
+                        cardanoWasm.TransactionHash.from_bytes(
+                            Buffer.from(utxo.tx_hash, 'hex')),
+                        utxo.tx_index
+                    ),
+                    cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(utxo.amount[0].quantity))
                 );
             }
             for (const x of Array(MINIMUM_UTXO).keys()) {
                 txBuilder.add_output(
                     cardanoWasm.TransactionOutput.new(
                         cardanoWasm.Address.from_bech32(this.paymentAddress),
-                    cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(tx_amount.toString()))    
+                        cardanoWasm.Value.new(cardanoWasm.BigNum.from_str(tx_amount.toString()))
                     ),
                 );
             }

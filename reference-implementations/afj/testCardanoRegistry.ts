@@ -29,7 +29,6 @@ import { CardanoAnonCredsRegistry } from './CardanoAnonCredsRegistry'
     await agent.initialize()
 
     try {
-
         // Create Link Secret
         await agent.modules.anoncreds.createLinkSecret({
             linkSecretId: 'anoncreds-link-secret',

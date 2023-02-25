@@ -42,7 +42,6 @@ class Cardano:
 
         TODO:
         - validate anoncreds object against models
-        - validate signature <--- VERY IMPORTANT
         - low balance warning
         - implementy query for objetcs
         - metadata labels pagination
@@ -270,7 +269,6 @@ class Cardano:
         for m in metas:
             meta_json = json.loads(''.join(list(m["json_metadata"].values())))
             if meta_json["ResourceObjectMetadata"]["resourceType"] == "REV_REG_ENTRY" and meta_json["ResourceObject"]["revocRegDefId"] == rev_reg_id and  meta_json["ResourceObjectMetadata"]["publisherId"] == publisher_DID:
-                # TODO VERIFY SIGNATURE
                 accumulators.append(meta_json["ResourceObject"])
         return accumulators
 
@@ -303,10 +301,7 @@ class Cardano:
             self.context.submit_tx(signed_tx.to_cbor())
     
     def validateSignature(self, object, publisherDID, signature):
-        # TODO
-        # resolve DID
-        # get public key from DID Doc
-        # verify signature
+        # Signature and validation is implemented in frameworks modules
         return True
 
     def createEnterpriseAddress(self):

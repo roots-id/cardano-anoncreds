@@ -14,8 +14,8 @@ import type {
   AnonCredsSchema,
   AnonCredsCredentialDefinition,
 } from '@aries-framework/anoncreds'
-import { AgentContext, DidsApi, TypedArrayEncoder, Key, KeyType, Buffer } from '@aries-framework/core'
-import { decodeFromBase58, encodeToBase58 } from './base58'
+import { AgentContext, TypedArrayEncoder, Key, KeyType, Buffer, DidResolverService, findVerificationMethodByKeyType } from '@aries-framework/core'
+import { decodeFromBase58 } from './base58'
 import Cardano from '../ts/src/cardano/Cardano'
 import { ISchema } from '../ts/src/cardano/models/ISchema'
 import { ICredDef, ICredDefPrimary, ICredDefRevocation } from '../ts/src/cardano/models/ICredDef'
@@ -54,27 +54,21 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
 
   public async getSchema(agentContext: AgentContext, schemaId: string): Promise<GetSchemaReturn> {
     try {
-      const didApi = agentContext.dependencyManager.resolve(DidsApi)
+      // const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
 
       const cardanoObject = await this.cardano.resolveObject(schemaId)
       const schema = cardanoObject.ResourceObject as ISchema
 
       const publisherId = cardanoObject.ResourceObjectMetadata.publisherId
       const publisherSignature = cardanoObject.ResourceObjectMetadata.publisherSignature
-      const messageHash = cardanoObject.ResourceObjectMetadata.checkSum
-      const didDoc = await didApi.resolve(publisherId)
-      const publicKeyBuffer = decodeFromBase58(didDoc.didDocument!.verificationMethod![0].publicKeyBase58!)
-        const didKey = new Key(
-            publicKeyBuffer,
-            KeyType.Ed25519,
-            )
-      const message = TypedArrayEncoder.fromString(messageHash)
-      const siganaturevalidation = await agentContext.wallet.verify({
-          key: didKey,
-          data: message,
-          signature: Buffer.from(publisherSignature!, 'base64')
-      })
-      if (siganaturevalidation) {
+      const siganatureValidation = await this.verifySignature(
+        agentContext,
+        publisherId,
+        publisherSignature!,
+        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+      )
+
+      if (siganatureValidation) {
         return {
           resolutionMetadata: {},
           schema,
@@ -109,35 +103,43 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     options: RegisterSchemaOptions
   ): Promise<RegisterSchemaReturn> {
     try {
-      
-      const didApi = agentContext.dependencyManager.resolve(DidsApi)
-      const didDoc = await didApi.resolve(options.schema.issuerId)
-      const publicKeyBuffer = decodeFromBase58(didDoc.didDocument!.verificationMethod![0].publicKeyBase58!)
-        const didKey = new Key(
-            publicKeyBuffer,
-            KeyType.Ed25519,
-            )
-
-      const message = TypedArrayEncoder.fromString(MD5(JSON.stringify(options.schema)).toString())
-      const signature = await agentContext.wallet.sign({
-          data: message,
-          key: didKey,
-      })
-      const registrationResultMetadata = await this.cardano.registerSchema(
-        options.schema,
+      const message = MD5(JSON.stringify(options.schema)).toString()
+      const signature = await this.signAnoncredObject(
+        agentContext,
         options.schema.issuerId,
-        signature.toString('base64')
+        message
       )
-      const schemaId = registrationResultMetadata.resourceURI
-      return {
-        registrationMetadata: {},
-        schemaMetadata: { ...registrationResultMetadata },
-        schemaState: {
-          state: 'finished',
-          schema: options.schema,
-          schemaId,
-        },
+      if (signature !== null){
+        const registrationResultMetadata = await this.cardano.registerSchema(
+          options.schema,
+          options.schema.issuerId,
+          signature
+        )
+        const schemaId = registrationResultMetadata.resourceURI
+        return {
+          registrationMetadata: {},
+          schemaMetadata: { ...registrationResultMetadata },
+          schemaState: {
+            state: 'finished',
+            schema: options.schema,
+            schemaId,
+          },
+        }
+      } else {
+        return {
+          registrationMetadata: {},
+          schemaMetadata: {
+          },
+          schemaState: {
+            state: 'failed',
+            reason: `Failed to sign Schema with issuerId ${options.schema.issuerId}`,
+            schema: options.schema,
+            schemaId: '',
+          },
+        }
+
       }
+      
     } catch (error) {
       return {
         registrationMetadata: {},
@@ -145,9 +147,9 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         },
         schemaState: {
           state: 'failed',
-          reason: "Failed to register schema on Cardano blockchain",
+          reason: 'Failed to register schema on Cardano blockchain',
           schema: options.schema,
-          schemaId: "",
+          schemaId: '',
         },
       }
     }
@@ -158,27 +160,16 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     credentialDefinitionId: string
   ): Promise<GetCredentialDefinitionReturn> {
     try {
-      
-      const didApi = agentContext.dependencyManager.resolve(DidsApi)
-
       const cardanoObject = await this.cardano.resolveObject(credentialDefinitionId)
-
       const publisherId = cardanoObject.ResourceObjectMetadata.publisherId
       const publisherSignature = cardanoObject.ResourceObjectMetadata.publisherSignature
-      const messageHash = cardanoObject.ResourceObjectMetadata.checkSum
-      const didDoc = await didApi.resolve(publisherId)
-      const publicKeyBuffer = decodeFromBase58(didDoc.didDocument!.verificationMethod![0].publicKeyBase58!)
-        const didKey = new Key(
-            publicKeyBuffer,
-            KeyType.Ed25519,
-            )
-      const message = TypedArrayEncoder.fromString(messageHash)
-      const siganaturevalidation = await agentContext.wallet.verify({
-          key: didKey,
-          data: message,
-          signature: Buffer.from(publisherSignature!, 'base64')
-      })
-      if (siganaturevalidation) {
+      const siganatureValidation = await this.verifySignature(
+        agentContext,
+        publisherId,
+        publisherSignature!,
+        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+      )
+      if (siganatureValidation) {
         const credDef = cardanoObject.ResourceObject as ICredDef
       const primary = {
         n: credDef.value.primary.n,
@@ -274,36 +265,42 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         }
       }
 
-      const didApi = agentContext.dependencyManager.resolve(DidsApi)
-      const didDoc = await didApi.resolve(options.credentialDefinition.issuerId)
-      const publicKeyBuffer = decodeFromBase58(didDoc.didDocument!.verificationMethod![0].publicKeyBase58!)
-        const didKey = new Key(
-            publicKeyBuffer,
-            KeyType.Ed25519,
-            )
-
-      const message = TypedArrayEncoder.fromString(MD5(JSON.stringify(credDef)).toString())
-      const signature = await agentContext.wallet.sign({
-          data: message,
-          key: didKey,
-      })
-
-
-      const registrationResultMetadata = await this.cardano.registerCredDef(
-        credDef,
+      const message = MD5(JSON.stringify(credDef)).toString()
+      const signature = await this.signAnoncredObject(
+        agentContext,
         options.credentialDefinition.issuerId,
-        signature.toString('base64')
+        message
       )
-      const credentialDefinitionId = registrationResultMetadata.resourceURI
-      return {
-        registrationMetadata: {},
-        credentialDefinitionMetadata: { ...registrationResultMetadata },
-        credentialDefinitionState: {
-          state: 'finished',
-          credentialDefinition: options.credentialDefinition,
-          credentialDefinitionId,
-        },
+      if (signature !== null) {
+        const registrationResultMetadata = await this.cardano.registerCredDef(
+          credDef,
+          options.credentialDefinition.issuerId,
+          signature
+        )
+        const credentialDefinitionId = registrationResultMetadata.resourceURI
+        return {
+          registrationMetadata: {},
+          credentialDefinitionMetadata: { ...registrationResultMetadata },
+          credentialDefinitionState: {
+            state: 'finished',
+            credentialDefinition: options.credentialDefinition,
+            credentialDefinitionId,
+          },
+        }
+      } else {
+        return {
+          registrationMetadata: {},
+          credentialDefinitionMetadata: {},
+          credentialDefinitionState: {
+            state: 'failed',
+            reason: `Failed to sign Credential Definition with issuerId ${options.credentialDefinition.issuerId}`,
+            credentialDefinition: options.credentialDefinition,
+            credentialDefinitionId: "",
+          },
+        }
       }
+
+
     } catch (error) {
       return {
         registrationMetadata: {},
@@ -359,11 +356,65 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         revocationStatusListMetadata: {},
       }
     }
-
     return {
       resolutionMetadata: {},
       revocationStatusList: revocationStatusLists[timestamp],
       revocationStatusListMetadata: {},
     }
+  }
+  private async verifySignature(
+    agentContext: AgentContext,
+    did: string, 
+    signature: string, 
+    data: string): Promise<boolean> {
+
+    const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
+    const didDoc = await didResolver.resolve(agentContext, did)
+    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020',didDoc.didDocument!)
+    if (verificationMethod == null){
+      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018',didDoc.didDocument!)
+      if (verificationMethod == null){
+        return false
+      }
+    } 
+    const publicKeyBuffer = decodeFromBase58(verificationMethod.publicKeyBase58!)
+    const didKey = new Key(
+        publicKeyBuffer,
+        KeyType.Ed25519,
+        )
+    const message = TypedArrayEncoder.fromString(data)
+    const signatureBuffer = Buffer.from(signature, 'base64')
+    const result = await agentContext.wallet.verify({
+        data: message,
+        key: didKey,
+        signature: signatureBuffer
+    })
+    return result
+  }
+  private async signAnoncredObject(
+    agentContext: AgentContext,
+    did: string, 
+    data: string): Promise<string | null> {
+
+    const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
+    const didDoc = await didResolver.resolve(agentContext, did)
+    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020',didDoc.didDocument!)
+    if (verificationMethod == null){
+      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018',didDoc.didDocument!)
+      if (verificationMethod == null){
+        return null
+      }
+    } 
+    const publicKeyBuffer = decodeFromBase58(verificationMethod.publicKeyBase58!)
+    const didKey = new Key(
+        publicKeyBuffer,
+        KeyType.Ed25519,
+        )
+    const message = TypedArrayEncoder.fromString(data)
+    const signature = await agentContext.wallet.sign({
+      data: message,
+      key: didKey,
+  })
+    return signature.toString('base64')
   }
 }
