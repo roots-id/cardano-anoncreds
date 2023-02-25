@@ -153,7 +153,7 @@ export default class Cardano {
                 publisherId: publisher_DID,
                 publisherSignature: signature
             }
-            const revRegId = revRegEntry.revocRegDefId
+            const revRegId = revRegEntry.revRegDefId
             const objectId = revRegId.split("/").slice(-1)[0]
             const meta = await this.getObject(objectId)
             const prefix = parseInt(meta[0]['label'])

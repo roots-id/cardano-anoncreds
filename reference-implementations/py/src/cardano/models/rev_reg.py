@@ -6,11 +6,15 @@ class RevRegAccumKey(TypedDict):
 class RevRegPublicKeys(TypedDict):
     accumKey: RevRegAccumKey
 
-class RevReg(TypedDict):
-    type: str
-    credDefId: str
-    tag: str
+class RevRegValue(TypedDict):
     publicKeys: RevRegPublicKeys
     maxCredNum: int
     tailsLocation: str
     tailsHash: str
+
+class RevReg(TypedDict):
+    issuerId: str
+    revocDefType: str
+    credDefId: str
+    tag: str
+    value: RevRegValue

@@ -152,7 +152,7 @@ class Cardano:
                 "publisherId": publisher_DID,
                 "publisherSignature": signature
             }
-            rev_reg_id = rev_reg_entry["revocRegDefId"]
+            rev_reg_id = rev_reg_entry["revRegDefId"]
             object_id = rev_reg_id.split("/")[-1]
             meta = self.getObject(object_id)
             prefix = int(meta[0]['label'])
@@ -268,7 +268,7 @@ class Cardano:
         
         for m in metas:
             meta_json = json.loads(''.join(list(m["json_metadata"].values())))
-            if meta_json["ResourceObjectMetadata"]["resourceType"] == "REV_REG_ENTRY" and meta_json["ResourceObject"]["revocRegDefId"] == rev_reg_id and  meta_json["ResourceObjectMetadata"]["publisherId"] == publisher_DID:
+            if meta_json["ResourceObjectMetadata"]["resourceType"] == "REV_REG_ENTRY" and meta_json["ResourceObject"]["revRegDefId"] == rev_reg_id and  meta_json["ResourceObjectMetadata"]["publisherId"] == publisher_DID:
                 accumulators.append(meta_json["ResourceObject"])
         return accumulators
 

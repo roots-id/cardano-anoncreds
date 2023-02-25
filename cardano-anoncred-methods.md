@@ -106,30 +106,30 @@ Resource Objects based on its type:
 ### Revocation registry `REV_REG`
 ```
 {
-  "type": "CL_ACCUM",
+  "issuerId": "did:web:example.org",
+  "revocDefType": "CL_ACCUM",
   "credDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140384:mctc",
   "tag": "MyCustomCredentialDefinition",
-  "publicKeys": {
-    "accumKey": {
-      "z": "1 0BB...386"
-    }
-  },
-  "maxCredNum": 666,
-  "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
-  "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  "value": {
+    "publicKeys": {
+      "accumKey": {
+        "z": "1 0BB...386"
+      }
+    },
+    "maxCredNum": 666,
+    "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+    "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+  }
 }
 ```
 
 ### Revocation registry entries `REV_REG_ENTRY`
 ```
 {
-  "revocDefType": "CL_ACCUM",
-  "revocRegDefId": "Gs6cQcvrtWoZKsbBhD3dQJ:4:Gs6cQcvrtWoZKsbBhD3dQJ:3:CL:140389:mctc:CL_ACCUM:1-1024",
-  "value": {
-    "accum": "21 10B...33D",
-    "prevAccum": "21 128...C3B",
-    "issued": [],
-    "revoked": [ 172 ]
+  "revRegDefId": "4xE68b6S5VRFrKMMG1U95M:4:4xE68b6S5VRFrKMMG1U95M:3:CL:59232:default:CL_ACCUM:4ae1cc6c-f6bd-486c-8057-88f2ce74e960",
+  "revocationList": [0, 1, 1, 0],
+  "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+  "timestamp": 1669640864487
   }
 }
 ```

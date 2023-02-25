@@ -8,13 +8,18 @@ export interface IRevRegPublicKeys {
     accumKey: IRevRegAccumKey
 }
 
-export interface IRevReg {
-    type: string
-    credDefId: string
-    tag: string
+export interface IRevRegValue {
     publicKeys: IRevRegPublicKeys
     maxCredNum: number
     tailsLocation: string
     tailsHash: string
+}
+
+export interface IRevReg {
+    issuerId: string
+    revocDefType: string
+    credDefId: string
+    tag: string
+    value: IRevRegValue
     RevRegEntries?: IRevRegEntry[]
 }

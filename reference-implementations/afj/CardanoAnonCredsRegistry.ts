@@ -19,6 +19,7 @@ import { decodeFromBase58 } from './base58'
 import Cardano from '../ts/src/cardano/Cardano'
 import { ISchema } from '../ts/src/cardano/models/ISchema'
 import { ICredDef, ICredDefPrimary, ICredDefRevocation } from '../ts/src/cardano/models/ICredDef'
+import {IRevReg} from '../ts/src/cardano/models/IRevReg'
 import {MD5} from 'crypto-js'
 
 /**
@@ -54,7 +55,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
 
   public async getSchema(agentContext: AgentContext, schemaId: string): Promise<GetSchemaReturn> {
     try {
-      // const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
 
       const cardanoObject = await this.cardano.resolveObject(schemaId)
       const schema = cardanoObject.ResourceObject as ISchema
@@ -319,24 +319,79 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     agentContext: AgentContext,
     revocationRegistryDefinitionId: string
   ): Promise<GetRevocationRegistryDefinitionReturn> {
-    const revocationRegistryDefinition = this.revocationRegistryDefinitions[revocationRegistryDefinitionId]
+    try {
+      const cardanoObject = await this.cardano.resolveObject(revocationRegistryDefinitionId)
+      const publisherId = cardanoObject.ResourceObjectMetadata.publisherId
+      const publisherSignature = cardanoObject.ResourceObjectMetadata.publisherSignature
+      const siganatureValidation = await this.verifySignature(
+        agentContext,
+        publisherId,
+        publisherSignature!,
+        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+      )
+      if (siganatureValidation) {
+        const revReg = cardanoObject.ResourceObject as IRevReg
+      const primary = {
+        n: credDef.value.primary.n,
+        r: credDef.value.primary.r,
+        rctxt: credDef.value.primary.rctxt,
+        s: credDef.value.primary.s,
+        z: credDef.value.primary.z
+      }
+      let revocation: unknown = undefined
+      if (credDef.value.revocation !== undefined) {
+        revocation = {
+          g: credDef.value.revocation.g,
+          g_dash: credDef.value.revocation.g_dash,
+          h: credDef.value.revocation.h,
+          h0: credDef.value.revocation.h0,
+          h1: credDef.value.revocation.h1,
+          h2: credDef.value.revocation.h2,
+          h_cap: credDef.value.revocation.h_cap,
+          htilde: credDef.value.revocation.htilde,
+          pk: credDef.value.revocation.pk,
+          u: credDef.value.revocation.u,
+          y: credDef.value.revocation.y
+        }
+      }
 
-    if (!revocationRegistryDefinition) {
+      const credentialDefinition: AnonCredsCredentialDefinition = {
+        issuerId: credDef.issuerId,
+        schemaId: credDef.schemaId,
+        tag: credDef.tag,
+        type: "CL",
+        value: {
+          primary: primary,
+          revocation: revocation
+        }
+      }
+      return {
+        resolutionMetadata: {},
+        credentialDefinition,
+        revocationRegistryDefinitionId,
+        revocationRegistryDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
+      }
+      } else {
+        return {
+          resolutionMetadata: {
+            error: 'notFound',
+            message: `Credential definition with id ${revocationRegistryDefinitionId} found in Cardano blockchain but signature is not valid`,
+          },
+          revocationRegistryDefinitionId,
+          revocationRegistryDefinitionMetadata: {},
+        }
+      }
+
+      
+    } catch (error) {
       return {
         resolutionMetadata: {
           error: 'notFound',
-          message: `Revocation registry definition with id ${revocationRegistryDefinition} not found in memory registry`,
+          message: `Credential definition with id ${revocationRegistryDefinitionId} not found in Cardano blockchain`,
         },
         revocationRegistryDefinitionId,
         revocationRegistryDefinitionMetadata: {},
       }
-    }
-
-    return {
-      resolutionMetadata: {},
-      revocationRegistryDefinition,
-      revocationRegistryDefinitionId,
-      revocationRegistryDefinitionMetadata: {},
     }
   }
 

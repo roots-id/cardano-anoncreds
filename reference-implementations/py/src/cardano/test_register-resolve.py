@@ -70,17 +70,21 @@ print("\n")
 print("Registering REV_REG")
 rev_reg_id = cardano.registerRevReg(
     {
-        "type": "CL_ACCUM",
+        "issuerId": "did:prism:123456789abcdefghi",
+        "revocDefType": "CL_ACCUM",
         "credDefId": cred_def_id,
         "tag": "MyCustomCredentialDefinition",
-        "publicKeys": {
-            "accumKey": {
-            "z": "1 0BB...386"
-            }
-        },
-        "maxCredNum": 666,
-        "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
-        "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+        "value": {
+            "publicKeys": {
+                "accumKey": {
+                    "z": "1 0BB...386"
+                }
+            },
+            "maxCredNum": 666,
+            "tailsLocation": "https://my.revocations.tails/tailsfile.txt",
+            "tailsHash": "91zvq2cFmBZmHCcLqFyzv7bfehHH5rMhdAG5wTjqy2PE"
+        }
+
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -91,14 +95,10 @@ print("\n")
 print("Registering REV_REG_ENTRY")
 rev_reg_entry_id = cardano.registerRevRegEntry(
     {
-    "revocDefType": "CL_ACCUM",
-    "revocRegDefId": rev_reg_id,
-    "value": {
-        "accum": "21 10B...33D",
-        "prevAccum": "21 128...C3B",
-        "issued": [],
-        "revoked": [ 172 ]
-    }
+        "revRegDefId": rev_reg_id,
+        "revocationList": [0, 1, 1, 0],
+        "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+        "timestamp": 1669640864487
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -109,14 +109,10 @@ print("\n")
 print("Registering REV_REG_ENTRY")
 rev_reg_entry_id = cardano.registerRevRegEntry(
     {
-    "revocDefType": "CL_ACCUM",
-    "revocRegDefId": rev_reg_id,
-    "value": {
-        "accum": "21 10B...33D",
-        "prevAccum": "21 128...C3B",
-        "issued": [],
-        "revoked": [ 172 ]
-        }
+        "revRegDefId": rev_reg_id,
+        "revocationList": [0, 1, 1, 0],
+        "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+        "timestamp": 1669640864487
     },
     "did:prism:123456789abcdefghi",
     "ABCDSIGABC"
@@ -127,14 +123,10 @@ print("\n")
 print("Registering REV_REG_ENTRY from other publisher")
 rev_reg_entry_id = cardano.registerRevRegEntry(
     {
-    "revocDefType": "CL_ACCUM",
-    "revocRegDefId": rev_reg_id,
-    "value": {
-        "accum": "21 10B...33D",
-        "prevAccum": "21 128...C3B",
-        "issued": [],
-        "revoked": [ 172 ]
-    }
+        "revRegDefId": rev_reg_id,
+        "revocationList": [0, 1, 1, 0],
+        "currentAccumulator": "21 124C594B6B20E41B681E92B2C43FD165EA9E68BC3C9D63A82C8893124983CAE94 21 124C5341937827427B0A3A32113BD5E64FB7AB39BD3E5ABDD7970874501CA4897 6 5438CB6F442E2F807812FD9DC0C39AFF4A86B1E6766DBB5359E86A4D70401B0F 4 39D1CA5C4716FFC4FE0853C4FF7F081DFD8DF8D2C2CA79705211680AC77BF3A1 6 70504A5493F89C97C225B68310811A41AD9CD889301F238E93C95AD085E84191 4 39582252194D756D5D86D0EED02BF1B95CE12AED2FA5CD3C53260747D891993C",
+        "timestamp": 1669640864487
     },
     "did:prism:123456789abcdefghiOTHERDID",
     "ABCDSIGABC"
