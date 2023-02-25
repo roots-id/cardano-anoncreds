@@ -21,5 +21,5 @@ export interface IRevReg {
     credDefId: string
     tag: string
     value: IRevRegValue
-    RevRegEntries?: IRevRegEntry[]
+    revRegEntries?: IRevRegEntry[]
 }

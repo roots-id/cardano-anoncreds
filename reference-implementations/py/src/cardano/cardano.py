@@ -174,7 +174,7 @@ class Cardano:
         if meta_json["ResourceObjectMetadata"]["resourceType"] == "REV_REG":
             meta_key = meta[0]["label"]
             entries = self.getRevocationEntries(meta_key, resource_URI, meta_json["ResourceObjectMetadata"]["publisherId"])
-            meta_json["RevRegEntries"] = entries
+            meta_json["revRegEntries"] = entries
 
         return meta_json
 

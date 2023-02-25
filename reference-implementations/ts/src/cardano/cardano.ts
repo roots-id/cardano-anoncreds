@@ -173,7 +173,7 @@ export default class Cardano {
         if (metaJson.ResourceObjectMetadata.resourceType === "REV_REG") {
             const metaKey = meta[0].label
             const entries = await this.getRevocationEntries(metaKey, resourceURI, metaJson.ResourceObjectMetadata.publisherId)
-            metaJson["RevRegEntries"] = entries
+            metaJson["revRegEntries"] = entries
         }
 
         return metaJson

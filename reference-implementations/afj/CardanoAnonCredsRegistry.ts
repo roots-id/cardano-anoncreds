@@ -331,43 +331,27 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       )
       if (siganatureValidation) {
         const revReg = cardanoObject.ResourceObject as IRevReg
-      const primary = {
-        n: credDef.value.primary.n,
-        r: credDef.value.primary.r,
-        rctxt: credDef.value.primary.rctxt,
-        s: credDef.value.primary.s,
-        z: credDef.value.primary.z
-      }
-      let revocation: unknown = undefined
-      if (credDef.value.revocation !== undefined) {
-        revocation = {
-          g: credDef.value.revocation.g,
-          g_dash: credDef.value.revocation.g_dash,
-          h: credDef.value.revocation.h,
-          h0: credDef.value.revocation.h0,
-          h1: credDef.value.revocation.h1,
-          h2: credDef.value.revocation.h2,
-          h_cap: credDef.value.revocation.h_cap,
-          htilde: credDef.value.revocation.htilde,
-          pk: credDef.value.revocation.pk,
-          u: credDef.value.revocation.u,
-          y: credDef.value.revocation.y
+        const entryValue = {
+          publicKeys: {
+              accumKey: {
+                z: revReg.value.publicKeys.accumKey.z
+              },
+          },
+          maxCredNum: revReg.value.maxCredNum,
+          tailsLocation: revReg.value.tailsLocation,
+          tailsHash: revReg.value.tailsHash,
         }
-      }
 
-      const credentialDefinition: AnonCredsCredentialDefinition = {
-        issuerId: credDef.issuerId,
-        schemaId: credDef.schemaId,
-        tag: credDef.tag,
-        type: "CL",
-        value: {
-          primary: primary,
-          revocation: revocation
-        }
+      const revocationRegistryDefinition: AnonCredsRevocationRegistryDefinition = {
+        issuerId: revReg.issuerId,
+        revocDefType: 'CL_ACCUM',
+        credDefId: revReg.credDefId,
+        tag: revReg.tag,
+        value: entryValue
       }
       return {
         resolutionMetadata: {},
-        credentialDefinition,
+        revocationRegistryDefinition,
         revocationRegistryDefinitionId,
         revocationRegistryDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
       }
@@ -375,7 +359,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         return {
           resolutionMetadata: {
             error: 'notFound',
-            message: `Credential definition with id ${revocationRegistryDefinitionId} found in Cardano blockchain but signature is not valid`,
+            message: `RevocationRegistryDefinition  with id ${revocationRegistryDefinitionId} found in Cardano blockchain but signature is not valid`,
           },
           revocationRegistryDefinitionId,
           revocationRegistryDefinitionMetadata: {},
@@ -387,7 +371,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       return {
         resolutionMetadata: {
           error: 'notFound',
-          message: `Credential definition with id ${revocationRegistryDefinitionId} not found in Cardano blockchain`,
+          message: `RevocationRegistryDefinition with id ${revocationRegistryDefinitionId} not found in Cardano blockchain`,
         },
         revocationRegistryDefinitionId,
         revocationRegistryDefinitionMetadata: {},
@@ -400,22 +384,55 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     revocationRegistryId: string,
     timestamp: number
   ): Promise<GetRevocationStatusListReturn> {
-    const revocationStatusLists = this.revocationStatusLists[revocationRegistryId]
+    try {
+      const cardanoObject = await this.cardano.resolveObject(revocationRegistryId)
+      const publisherId = cardanoObject.ResourceObjectMetadata.publisherId
+      const publisherSignature = cardanoObject.ResourceObjectMetadata.publisherSignature
+      const siganatureValidation = await this.verifySignature(
+        agentContext,
+        publisherId,
+        publisherSignature!,
+        MD5(JSON.stringify(cardanoObject.ResourceObject)).toString()
+      )
+      if (siganatureValidation) {
+        const revReg = cardanoObject.ResourceObject as IRevReg
+        const revRegEntries = revReg.revRegEntries
+        // TODO find entry that fits timestamp (need clarification)
+        const foundEntry = revRegEntries![revRegEntries!.length - 1]
 
-    if (!revocationStatusLists || !revocationStatusLists[timestamp]) {
+      const revocationStatusList: AnonCredsRevocationStatusList = {
+        issuerId: revReg.issuerId,
+        revRegId: 'CL_ACCUM',
+        revocationList: foundEntry.revocationList,
+        currentAccumulator: foundEntry.currentAccumulator,
+        timestamp: foundEntry.timestamp
+      }
+      return {
+        resolutionMetadata: {},
+        revocationStatusList,
+        revocationStatusListMetadata: { ...cardanoObject.ResourceObjectMetadata },
+      }
+      } else {
+        return {
+          resolutionMetadata: {
+            error: 'notFound',
+            message: `Revocation status list for revocation registry with id ${revocationRegistryId} found in Cardano blockchain but signature is not valid`,
+          },
+          revocationStatusListMetadata: {},
+        }
+      }
+
+      
+    } catch (error) {
       return {
         resolutionMetadata: {
           error: 'notFound',
-          message: `Revocation status list for revocation registry with id ${revocationRegistryId} not found in memory registry`,
+          message: `Revocation status list for revocation registry with id ${revocationRegistryId} not found in Cardano blockchain`,
         },
         revocationStatusListMetadata: {},
       }
     }
-    return {
-      resolutionMetadata: {},
-      revocationStatusList: revocationStatusLists[timestamp],
-      revocationStatusListMetadata: {},
-    }
+
   }
   private async verifySignature(
     agentContext: AgentContext,
