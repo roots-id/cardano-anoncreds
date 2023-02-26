@@ -11,7 +11,6 @@ import type {
   GetRevocationStatusListReturn,
   AnonCredsRevocationStatusList,
   AnonCredsRevocationRegistryDefinition,
-  AnonCredsSchema,
   AnonCredsCredentialDefinition,
 } from '@aries-framework/anoncreds'
 import { AgentContext, TypedArrayEncoder, Key, KeyType, Buffer, DidResolverService, findVerificationMethodByKeyType } from '@aries-framework/core'
@@ -19,8 +18,8 @@ import { decodeFromBase58 } from './base58'
 import Cardano from '../ts/src/cardano/Cardano'
 import { ISchema } from '../ts/src/cardano/models/ISchema'
 import { ICredDef, ICredDefPrimary, ICredDefRevocation } from '../ts/src/cardano/models/ICredDef'
-import {IRevReg} from '../ts/src/cardano/models/IRevReg'
-import {SHA256} from 'crypto-js'
+import { IRevReg } from '../ts/src/cardano/models/IRevReg'
+import { SHA256 } from 'crypto-js'
 
 /**
  * Cardano Method implementation of the {@link AnonCredsRegistry} interface.
@@ -28,12 +27,12 @@ import {SHA256} from 'crypto-js'
 export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
   // Cardano AnonCreds Method support any qualified DID 
   public readonly supportedIdentifier = /did:*:[a-zA-Z0-9]/
-
+  
   private blockfrostProjectId: string
   private cardanoNerwork: string
   private cardanoAddressCborHex: string
   private cardano: Cardano
-
+  
   public constructor({
     blockfrostProjectId = '',
     cardanoNerwork = 'preview',
@@ -52,16 +51,11 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       cardanoAddressCborHex
     )
   }
-  public getData(){
-    return true
-  }
 
   public async getSchema(agentContext: AgentContext, schemaId: string): Promise<GetSchemaReturn> {
     try {
-
       const cardanoObject = await this.cardano.resolveObject(schemaId)
       const schema = cardanoObject.ResourceObject as ISchema
-
       const publisherId = cardanoObject.ResourceObjectMetadata.publisherId
       const publisherSignature = cardanoObject.ResourceObjectMetadata.publisherSignature
       const siganatureValidation = await this.verifySignature(
@@ -70,7 +64,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         publisherSignature!,
         SHA256(JSON.stringify(cardanoObject.ResourceObject)).toString()
       )
-
       if (siganatureValidation) {
         return {
           resolutionMetadata: {},
@@ -88,7 +81,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           schemaMetadata: {},
         }
       }
-      
     } catch (error) {
       return {
         resolutionMetadata: {
@@ -112,7 +104,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         options.schema.issuerId,
         message
       )
-      if (signature !== null){
+      if (signature !== null) {
         const registrationResultMetadata = await this.cardano.registerSchema(
           options.schema,
           options.schema.issuerId,
@@ -140,9 +132,7 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
             schemaId: '',
           },
         }
-
       }
-      
     } catch (error) {
       return {
         registrationMetadata: {},
@@ -174,46 +164,45 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       )
       if (siganatureValidation) {
         const credDef = cardanoObject.ResourceObject as ICredDef
-      const primary = {
-        n: credDef.value.primary.n,
-        r: credDef.value.primary.r,
-        rctxt: credDef.value.primary.rctxt,
-        s: credDef.value.primary.s,
-        z: credDef.value.primary.z
-      }
-      let revocation: unknown = undefined
-      if (credDef.value.revocation !== undefined) {
-        revocation = {
-          g: credDef.value.revocation.g,
-          g_dash: credDef.value.revocation.g_dash,
-          h: credDef.value.revocation.h,
-          h0: credDef.value.revocation.h0,
-          h1: credDef.value.revocation.h1,
-          h2: credDef.value.revocation.h2,
-          h_cap: credDef.value.revocation.h_cap,
-          htilde: credDef.value.revocation.htilde,
-          pk: credDef.value.revocation.pk,
-          u: credDef.value.revocation.u,
-          y: credDef.value.revocation.y
+        const primary = {
+          n: credDef.value.primary.n,
+          r: credDef.value.primary.r,
+          rctxt: credDef.value.primary.rctxt,
+          s: credDef.value.primary.s,
+          z: credDef.value.primary.z
         }
-      }
-
-      const credentialDefinition: AnonCredsCredentialDefinition = {
-        issuerId: credDef.issuerId,
-        schemaId: credDef.schemaId,
-        tag: credDef.tag,
-        type: "CL",
-        value: {
-          primary: primary,
-          revocation: revocation
+        let revocation: unknown = undefined
+        if (credDef.value.revocation !== undefined) {
+          revocation = {
+            g: credDef.value.revocation.g,
+            g_dash: credDef.value.revocation.g_dash,
+            h: credDef.value.revocation.h,
+            h0: credDef.value.revocation.h0,
+            h1: credDef.value.revocation.h1,
+            h2: credDef.value.revocation.h2,
+            h_cap: credDef.value.revocation.h_cap,
+            htilde: credDef.value.revocation.htilde,
+            pk: credDef.value.revocation.pk,
+            u: credDef.value.revocation.u,
+            y: credDef.value.revocation.y
+          }
         }
-      }
-      return {
-        resolutionMetadata: {},
-        credentialDefinition,
-        credentialDefinitionId,
-        credentialDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
-      }
+        const credentialDefinition: AnonCredsCredentialDefinition = {
+          issuerId: credDef.issuerId,
+          schemaId: credDef.schemaId,
+          tag: credDef.tag,
+          type: "CL",
+          value: {
+            primary: primary,
+            revocation: revocation
+          }
+        }
+        return {
+          resolutionMetadata: {},
+          credentialDefinition,
+          credentialDefinitionId,
+          credentialDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
+        }
       } else {
         return {
           resolutionMetadata: {
@@ -224,8 +213,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           credentialDefinitionMetadata: {},
         }
       }
-
-      
     } catch (error) {
       return {
         resolutionMetadata: {
@@ -243,8 +230,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
     options: RegisterCredentialDefinitionOptions
   ): Promise<RegisterCredentialDefinitionReturn> {
     try {
-
-
       const primary: ICredDefPrimary = {
         n: options.credentialDefinition.value.primary.n as string,
         r: options.credentialDefinition.value.primary.r as string,
@@ -256,7 +241,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
       if (options.credentialDefinition.value.revocation !== null) {
         revocation = options.credentialDefinition.value.revocation! as ICredDefRevocation
       }
-
       const credDef: ICredDef = {
         issuerId: options.credentialDefinition.issuerId,
         schemaId: options.credentialDefinition.schemaId,
@@ -267,7 +251,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           revocation: revocation
         }
       }
-
       const message = SHA256(JSON.stringify(credDef)).toString()
       const signature = await this.signAnoncredObject(
         agentContext,
@@ -302,8 +285,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           },
         }
       }
-
-
     } catch (error) {
       return {
         registrationMetadata: {},
@@ -336,28 +317,27 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         const revReg = cardanoObject.ResourceObject as IRevReg
         const entryValue = {
           publicKeys: {
-              accumKey: {
-                z: revReg.value.publicKeys.accumKey.z
-              },
+            accumKey: {
+              z: revReg.value.publicKeys.accumKey.z
+            },
           },
           maxCredNum: revReg.value.maxCredNum,
           tailsLocation: revReg.value.tailsLocation,
           tailsHash: revReg.value.tailsHash,
         }
-
-      const revocationRegistryDefinition: AnonCredsRevocationRegistryDefinition = {
-        issuerId: revReg.issuerId,
-        revocDefType: 'CL_ACCUM',
-        credDefId: revReg.credDefId,
-        tag: revReg.tag,
-        value: entryValue
-      }
-      return {
-        resolutionMetadata: {},
-        revocationRegistryDefinition,
-        revocationRegistryDefinitionId,
-        revocationRegistryDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
-      }
+        const revocationRegistryDefinition: AnonCredsRevocationRegistryDefinition = {
+          issuerId: revReg.issuerId,
+          revocDefType: 'CL_ACCUM',
+          credDefId: revReg.credDefId,
+          tag: revReg.tag,
+          value: entryValue
+        }
+        return {
+          resolutionMetadata: {},
+          revocationRegistryDefinition,
+          revocationRegistryDefinitionId,
+          revocationRegistryDefinitionMetadata: { ...cardanoObject.ResourceObjectMetadata },
+        }
       } else {
         return {
           resolutionMetadata: {
@@ -368,8 +348,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           revocationRegistryDefinitionMetadata: {},
         }
       }
-
-      
     } catch (error) {
       return {
         resolutionMetadata: {
@@ -403,18 +381,18 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         // TODO find entry that fits timestamp (need clarification)
         const foundEntry = revRegEntries![revRegEntries!.length - 1]
 
-      const revocationStatusList: AnonCredsRevocationStatusList = {
-        issuerId: revReg.issuerId,
-        revRegId: 'CL_ACCUM',
-        revocationList: foundEntry.revocationList,
-        currentAccumulator: foundEntry.currentAccumulator,
-        timestamp: foundEntry.timestamp
-      }
-      return {
-        resolutionMetadata: {},
-        revocationStatusList,
-        revocationStatusListMetadata: { ...cardanoObject.ResourceObjectMetadata },
-      }
+        const revocationStatusList: AnonCredsRevocationStatusList = {
+          issuerId: revReg.issuerId,
+          revRegId: 'CL_ACCUM',
+          revocationList: foundEntry.revocationList,
+          currentAccumulator: foundEntry.currentAccumulator,
+          timestamp: foundEntry.timestamp
+        }
+        return {
+          resolutionMetadata: {},
+          revocationStatusList,
+          revocationStatusListMetadata: { ...cardanoObject.ResourceObjectMetadata },
+        }
       } else {
         return {
           resolutionMetadata: {
@@ -424,8 +402,6 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
           revocationStatusListMetadata: {},
         }
       }
-
-      
     } catch (error) {
       return {
         resolutionMetadata: {
@@ -435,61 +411,58 @@ export class CardanoAnonCredsRegistry implements AnonCredsRegistry {
         revocationStatusListMetadata: {},
       }
     }
-
   }
   private async verifySignature(
     agentContext: AgentContext,
-    did: string, 
-    signature: string, 
+    did: string,
+    signature: string,
     data: string): Promise<boolean> {
-
     const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
     const didDoc = await didResolver.resolve(agentContext, did)
-    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020',didDoc.didDocument!)
-    if (verificationMethod == null){
-      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018',didDoc.didDocument!)
-      if (verificationMethod == null){
+    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020', didDoc.didDocument!)
+    if (verificationMethod == null) {
+      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018', didDoc.didDocument!)
+      if (verificationMethod == null) {
         return false
       }
-    } 
+    }
     const publicKeyBuffer = decodeFromBase58(verificationMethod.publicKeyBase58!)
     const didKey = new Key(
-        publicKeyBuffer,
-        KeyType.Ed25519,
-        )
+      publicKeyBuffer,
+      KeyType.Ed25519,
+    )
     const message = TypedArrayEncoder.fromString(data)
     const signatureBuffer = Buffer.from(signature, 'base64')
     const result = await agentContext.wallet.verify({
-        data: message,
-        key: didKey,
-        signature: signatureBuffer
+      data: message,
+      key: didKey,
+      signature: signatureBuffer
     })
     return result
   }
   private async signAnoncredObject(
     agentContext: AgentContext,
-    did: string, 
+    did: string,
     data: string): Promise<string | null> {
-
     const didResolver = agentContext.dependencyManager.resolve(DidResolverService)
     const didDoc = await didResolver.resolve(agentContext, did)
-    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020',didDoc.didDocument!)
-    if (verificationMethod == null){
-      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018',didDoc.didDocument!)
-      if (verificationMethod == null){
+    let verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2020', didDoc.didDocument!)
+    if (verificationMethod == null) {
+      verificationMethod = await findVerificationMethodByKeyType('Ed25519VerificationKey2018', didDoc.didDocument!)
+      if (verificationMethod == null) {
         return null
       }
-    } 
+    }
     const publicKeyBuffer = decodeFromBase58(verificationMethod.publicKeyBase58!)
     const didKey = new Key(
-        publicKeyBuffer,
-        KeyType.Ed25519,
-        )
+      publicKeyBuffer,
+      KeyType.Ed25519,
+    )
     const message = TypedArrayEncoder.fromString(data)
     const signature = await agentContext.wallet.sign({
       data: message,
       key: didKey,
-  })
+    })
     return signature.toString('base64')
   }
 }

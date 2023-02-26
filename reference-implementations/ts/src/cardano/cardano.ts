@@ -31,7 +31,6 @@ const MINIMUM_UTXO = 20
 const ALLOWS_ASYNC = true
 const QUEUE_DURATION = 90
 
-
 export default class Cardano {
 
     private readonly blockfrostAPI: BlockFrostAPI
@@ -42,12 +41,11 @@ export default class Cardano {
     private pendingTx: any[]
     private privateKey: cardanoWasm.PrivateKey
 
-
     constructor(
         blockfrostProjectId = '',
         cardanoNerwork = 'preview',
         cardanoAddressCborHex: string | undefined = undefined
-        ) {
+    ) {
         this.ledgerCache = new Map()
         this.availableUTXOs = []
         this.timer = null
@@ -171,7 +169,6 @@ export default class Cardano {
             const entries = await this.getRevocationEntries(metaKey, resourceURI, metaJson.ResourceObjectMetadata.publisherId)
             metaJson["revRegEntries"] = entries
         }
-
         return metaJson
     }
 
@@ -187,9 +184,7 @@ export default class Cardano {
         let meta: any = {}
         meta[metadataPrefix] = JSON.stringify(object).match(/(.{1,64})/g)
         return await this.processTransaction(meta)
-
     }
-
 
     async processTransaction(meta: any): Promise<string> {
         let txHash = ""
@@ -212,7 +207,6 @@ export default class Cardano {
     }
 
     async submitTransaction(meta: any): Promise<string> {
-
         try {
             const latestEpoch = await this.blockfrostAPI.epochsLatest()
             const protocolParams = await this.blockfrostAPI.epochsParameters(latestEpoch.epoch)
@@ -256,7 +250,6 @@ export default class Cardano {
                 ),
             );
 
-
             const auxData = cardanoWasm.AuxiliaryData.new()
             const metadata = cardanoWasm.encode_json_str_to_metadatum(JSON.stringify(meta[Object.keys(meta)[0]]), cardanoWasm.MetadataJsonSchema.NoConversions)
             const transactionMetadata = cardanoWasm.GeneralTransactionMetadata.new()
@@ -264,11 +257,9 @@ export default class Cardano {
             auxData.set_metadata(transactionMetadata)
             txBuilder.set_auxiliary_data(auxData)
             txBuilder.set_ttl(latestBlock.slot! + 600)
-
             txBuilder.add_change_if_needed(cardanoWasm.Address.from_bech32(this.paymentAddress))
             const txBody = txBuilder.build();
             const txHash = cardanoWasm.hash_transaction(txBody);
-
 
             const witnesses = cardanoWasm.TransactionWitnessSet.new();
             const vkeyWitnesses = cardanoWasm.Vkeywitnesses.new();
@@ -299,7 +290,6 @@ export default class Cardano {
             }
             return "tx_queued."
         }
-
     }
 
     async flushQueue(): Promise<void> {
@@ -309,7 +299,6 @@ export default class Cardano {
             await this.submitTransaction(m)
         })
         this.timer = null
-
     }
 
     async getObject(txID: string): Promise<any> {
