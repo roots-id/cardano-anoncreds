@@ -3,6 +3,25 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
+## March 17, 2023 Working Group Meeting  <--- NEXT MEETING
+###Talk about CIP
+
+## March 3, 2023 Working Group Meeting
+
+Participants:
+* Lance Byrd (RootsID)
+* Alex Andrei (RootsID)
+* Rodolfo Miranda (RootsID)
+* Bjorn Sandmann
+
+### Prism
+* Prism did method published.
+* Possible to use AnonCreds w/prism did all on Cardano.
+
+### AnonCreds Reference impl
+* AnonCreds in AFJ
+* Cardano AnonCreds module in AFJ demonstration
+
 ## February 17, 2023 Working Group Meeting <--- NEXT MEETING
 Participants:
 * Lance Byrd (RootsID)
