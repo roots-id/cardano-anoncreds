@@ -13,6 +13,9 @@ Working documents:
 
 The ledger-agnostic [AnonCred Specification](https://hyperledger.github.io/anoncreds-spec) is a work-in-progress project from the AnonCreds Specification Working Group at [Linux Hyperledger Foundation](https://www.hyperledger.org). All interested are welcome to participate and collaborate also into the Hyperledger AnonCred WG. 
 
+## Latest Presentations
+- [See Rodolfo's presentation to the AnonCreds WG at minute 6:45 in this recording](https://wiki.hyperledger.org/display/ANONCREDS/2023-02-27+AnonCreds+Specification+Working+Group+Meeting?preview=/80777791/80777865/20230227%20AnonCreds%20Specification%20Working%20Group%20Meeting%20Call%20Recording.mp4)
+
 ## Useful links
 - [AnonCred Specification](https://hyperledger.github.io/anoncreds-spec) (WIP)
 - [AnonCreds Methods Registry](https://hyperledger.github.io/anoncreds-methods-registry/)
