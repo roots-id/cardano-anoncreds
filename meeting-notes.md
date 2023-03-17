@@ -3,8 +3,25 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## March 17, 2023 Working Group Meeting  <--- NEXT MEETING
-###Talk about CIP
+## March 31, 2023 Working Group Meeting  <--- NEXT MEETING
+
+## March 17, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Rodolfo Miranda (RootsID)
+* Bjorn Sandmann (BlockTrust)
+
+### AnonCreds Performance
+* Revocation takes time - tails files, CL signatures (RSA) has been mentioned, v2 is focused on improving 
+* Issuance and verification is fast... imperceptible if it is slower than other formats
+* Sovrin is using it in production
+
+### IIW
+* Lets reach out to Stephen Curran 
+* DIDComm interop
+
+### Talk about CIP
+* After IIW
 
 ## March 3, 2023 Working Group Meeting
 
