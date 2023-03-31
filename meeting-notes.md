@@ -3,7 +3,21 @@
 - Calendar invite: [Google Calendar](https://calendar.google.com/calendar/event?action=TEMPLATE&tmeid=MXBvNXVnNnQ1OWpyY204aWpobnAyOWQ2Z3RfMjAyMjExMTFUMTgwMDAwWiBsYW5jZS5ieXJkQHJvb3RzaWQuY29t&tmsrc=lance.byrd%40rootsid.com&scp=ALL)
 - Meet link: https://meet.google.com/cnq-dcst-wtb
 
-## March 31, 2023 Working Group Meeting  <--- NEXT MEETING
+## April 28, 2023 Working Group Meeting  <--- NEXT MEETING
+
+## March 31, 2023 Working Group Meeting
+Participants:
+* Lance Byrd (RootsID)
+* Rodolfo Miranda (RootsID)
+* Bjorn Sandmann (BlockTrust)
+* Ed Eykholt (BlockTrust)
+* Frank Albanese (Snapbrillia)
+
+### AnonCreds update at IIW
+* Stephen will host a session, we don't know much yet, but will try to participate
+
+### AnonCreds workshop, end of May
+* Rodolfo will demo Cardano AnonCreds method
 
 ## March 17, 2023 Working Group Meeting
 Participants:
